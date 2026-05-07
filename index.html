@@ -837,7 +837,7 @@ let fcHistory = [];
 
 /* font-size state: 12–24px, default 16 */
 let cardFontSize = 12;
-const FS_MIN = 12, FS_MAX = 24;
+const FS_MIN = 8, FS_MAX = 24;
 
 function changeFontSize(delta) {
   cardFontSize = Math.min(FS_MAX, Math.max(FS_MIN, cardFontSize + delta));
