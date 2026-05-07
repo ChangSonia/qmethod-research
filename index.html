@@ -154,11 +154,25 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 
 /* left panel */
 .left-panel {
-  width: 224px; flex-shrink: 0;
+  width: 224px; flex-shrink: 0; min-width: 160px; max-width: 420px;
   background: var(--surface); border-right: 0.5px solid var(--border);
   display: flex; flex-direction: column; transition: background 0.2s;
+  position: relative;
 }
 .left-panel.over { background: var(--green-l); }
+
+/* resize handle */
+.resize-handle {
+  position: absolute; top: 0; right: -4px; bottom: 0; width: 8px;
+  cursor: col-resize; z-index: 10;
+  display: flex; align-items: center; justify-content: center;
+}
+.resize-handle::after {
+  content: ''; display: block; width: 2px; height: 32px;
+  background: var(--border2); border-radius: 2px; opacity: 0;
+  transition: opacity 0.15s;
+}
+.resize-handle:hover::after, .resize-handle.dragging::after { opacity: 1; }
 .left-hdr { padding: 10px 12px 8px; border-bottom: 0.5px solid var(--border); }
 .left-hdr p { font-size: 12px; color: var(--text2); margin-bottom: 6px; }
 .search { width: 100%; font-size: 13px; padding: 6px 10px; border: 0.5px solid var(--border); border-radius: var(--r); background: var(--bg); color: var(--text); outline: none; margin-bottom: 8px; }
@@ -523,7 +537,7 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
       <h1>第一步：初步分類</h1>
       <div class="fs-ctrl">
         <button class="fs-btn" onclick="changeFontSize(-1)">−</button>
-        <span class="fs-label" id="fs-label">16px</span>
+        <span class="fs-label" id="fs-label">12px</span>
         <button class="fs-btn" onclick="changeFontSize(1)">+</button>
       </div>
     </div>
@@ -575,7 +589,7 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
       <div class="toolbar">
         <div class="fs-ctrl">
           <button class="fs-btn" onclick="changeFontSize(-1)">−</button>
-          <span class="fs-label" id="fs-label2">16px</span>
+          <span class="fs-label" id="fs-label2">12px</span>
           <button class="fs-btn" onclick="changeFontSize(1)">+</button>
         </div>
         <button class="tbtn" id="btn-undo" onclick="undoLast()" disabled>↩ 上一步</button>
@@ -585,6 +599,7 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
     </div>
     <div class="main-area">
       <div class="left-panel" id="left-panel">
+        <div class="resize-handle" id="resize-handle"></div>
         <div class="left-hdr">
           <p id="remaining-lbl">待排 <strong>54</strong> 張</p>
           <input class="search" type="text" placeholder="搜尋陳述句…" oninput="filterCards(this.value)">
@@ -732,7 +747,7 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 ══════════════════════════════════════ -->
 <script>
 /* ── ADMIN PASSWORD (change this before deploying) ── */
-const ADMIN_PASSWORD = 'research2024';
+const ADMIN_PASSWORD = '0000';
 
 /* ── COLUMNS CONFIG ── */
 const COLS = [
@@ -820,7 +835,7 @@ let piles = { unplaced:[], neg:[], zero:[], pos:[] };
 let fcHistory = [];
 
 /* font-size state: 12–24px, default 16 */
-let cardFontSize = 16;
+let cardFontSize = 12;
 const FS_MIN = 12, FS_MAX = 24;
 
 function changeFontSize(delta) {
@@ -1134,7 +1149,7 @@ async function loadAdmin() {
 
   const tbody = document.getElementById('resp-tbody');
   if (!allResponses.length) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:24px">尚無資料</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:24px">尚無資料</td></tr>';
     return;
   }
 
@@ -1142,7 +1157,7 @@ async function loadAdmin() {
     const bg = r.background || {};
     const dt = r.completed_at ? new Date(r.completed_at).toLocaleString('zh-TW') : '–';
     const isComplete = r.status === 'complete';
-    return `<tr>
+    return `<tr id="row-${r.id}">
       <td>${r.participant_id || r.id.slice(0,8)}</td>
       <td>${dt}</td>
       <td>${bg.field||'–'}</td>
@@ -1150,8 +1165,34 @@ async function loadAdmin() {
       <td>${bg.ai_use||'–'}</td>
       <td>${r.duration_minutes ? r.duration_minutes+'分' : '–'}</td>
       <td><span class="badge ${isComplete?'complete':'partial'}">${isComplete?'完成':'進行中'}</span></td>
+      <td><button class="del-btn" onclick="deleteResponse('${r.id}')">刪除</button></td>
     </tr>`;
   }).join('');
+}
+
+async function deleteResponse(docId) {
+  if (!confirm('確定要刪除這筆資料嗎？此操作無法復原。')) return;
+  await waitForFirebase();
+  const { doc } = window._fns;
+  const db = window._db;
+  try {
+    // import deleteDoc dynamically since we didn't include it at init
+    const { deleteDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    await deleteDoc(doc(db, 'responses', docId));
+    // remove row from UI immediately
+    const row = document.getElementById('row-'+docId);
+    if (row) row.remove();
+    allResponses = allResponses.filter(r=>r.id!==docId);
+    // refresh stats
+    const complete = allResponses.filter(r=>r.status==='complete');
+    const partial  = allResponses.filter(r=>r.status!=='complete');
+    document.getElementById('stat-complete').textContent = complete.length;
+    document.getElementById('stat-partial').textContent  = partial.length;
+    document.getElementById('stat-total').textContent    = allResponses.length;
+  } catch(e) {
+    alert('刪除失敗：' + e.message);
+    console.error(e);
+  }
 }
 
 function exportCSV() {
@@ -1385,6 +1426,29 @@ function setupLeftDrop() {
       const rid=dragSource; delete placement[dragSource];
       dragSource=null; dragSourceType=null; refreshQSort(rid);
     }
+  });
+
+  // ── resize handle ──
+  const handle = document.getElementById('resize-handle');
+  let resizing = false, startX = 0, startW = 0;
+  handle.addEventListener('mousedown', e => {
+    resizing = true; startX = e.clientX; startW = panel.offsetWidth;
+    handle.classList.add('dragging');
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', e => {
+    if (!resizing) return;
+    const newW = Math.min(420, Math.max(160, startW + (e.clientX - startX)));
+    panel.style.width = newW + 'px';
+  });
+  document.addEventListener('mouseup', () => {
+    if (!resizing) return;
+    resizing = false;
+    handle.classList.remove('dragging');
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
   });
 }
 
