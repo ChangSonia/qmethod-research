@@ -1209,7 +1209,7 @@ function exportCSV() {
   });
 
   const csv = [header, ...rows].map(r=>r.map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
-  download('qsort_data.csv', csv, 'text/csv');
+  download('qsort_data.csv', '\uFEFF' + csv, 'text/csv;charset=utf-8');
 }
 
 function exportJSON() {
