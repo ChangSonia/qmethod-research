@@ -409,11 +409,176 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 .field.invalid .field-err { display:block; }
 .field.invalid input, .field.invalid select { border-color:var(--red); }
 .field.invalid .radio-group { outline:1.5px solid var(--red); border-radius:var(--r); padding:6px 8px; }
+/* ══════════════════════════════════════════
+   HELP MODAL
+══════════════════════════════════════════ */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 8000;
+  background: rgba(0,0,0,0.45); align-items: center; justify-content: center;
+  padding: 24px;
+}
+.modal-overlay.open { display: flex; }
+
+.modal-box {
+  background: var(--surface); border-radius: var(--r-lg);
+  border: 0.5px solid var(--border); padding: 32px 36px;
+  max-width: 520px; width: 100%; max-height: 82vh; overflow-y: auto;
+  position: relative;
+}
+.modal-box::-webkit-scrollbar { width: 4px; }
+.modal-box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.modal-close {
+  position: absolute; top: 16px; right: 16px;
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 0.5px solid var(--border); background: transparent;
+  color: var(--text2); cursor: pointer; font-size: 14px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.modal-close:hover { background: var(--bg2); }
+
+.modal-box h3 { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+.modal-box .modal-sub { font-size: 13px; color: var(--text2); margin-bottom: 20px; }
+.modal-section { margin-bottom: 18px; }
+.modal-section h4 { font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text); }
+.modal-step {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 8px 10px; border-radius: var(--r);
+  background: var(--bg); margin-bottom: 6px;
+}
+.modal-step-icon {
+  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600;
+}
+.modal-step-icon.neg  { background: #FDF3F0; color: var(--red); }
+.modal-step-icon.zero { background: var(--bg2); color: var(--text2); }
+.modal-step-icon.pos  { background: #F0FAF6; color: var(--green-d); }
+.modal-step-icon.info { background: var(--bg2); color: var(--text2); }
+.modal-step-text { font-size: 13px; line-height: 1.6; color: var(--text2); }
+.modal-step-text strong { color: var(--text); }
+.modal-divider { height: 0.5px; background: var(--border); margin: 16px 0; }
+.modal-ok-btn { width: 100%; margin-top: 20px; }
+
+/* ? button shared style */
+.help-btn {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 0.5px solid var(--border); background: transparent;
+  color: var(--text2); cursor: pointer; font-size: 14px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s; flex-shrink: 0;
+}
+.help-btn:hover { background: var(--bg2); color: var(--text); }
 </style>
 </head>
 <body>
 
-<!-- ══ DEV NAV — remove before publishing ══ -->
+<!-- ══ PRESORT HELP MODAL ══ -->
+<div class="modal-overlay" id="modal-presort" onclick="if(event.target===this)closeModal('presort')">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('presort')">✕</button>
+    <h3>第一步：初步分類說明</h3>
+    <p class="modal-sub">在正式排列之前，請先對每一張陳述句卡片做出初步的直覺判斷。這個步驟不需要精確，只是幫助您整理思路。</p>
+
+    <div class="modal-section">
+      <h4>操作方式</h4>
+      <div class="modal-step">
+        <div class="modal-step-icon info">1</div>
+        <div class="modal-step-text">畫面中央會<strong>逐一顯示</strong>每一張陳述句卡片，共 54 張。</div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon info">2</div>
+        <div class="modal-step-text">閱讀後，點選下方的<strong>不同意、中性／不確定、同意</strong>其中一個按鈕。</div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon info">3</div>
+        <div class="modal-step-text">按下<strong>↩ 上一步</strong>可以撤回上一張的選擇，重新分類。</div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon info">4</div>
+        <div class="modal-step-text">54 張全部分類完成後，自動進入正式排列階段。</div>
+      </div>
+    </div>
+
+    <div class="modal-divider"></div>
+    <div class="modal-section">
+      <h4>三個分類的意思</h4>
+      <div class="modal-step">
+        <div class="modal-step-icon neg">−</div>
+        <div class="modal-step-text"><strong>不同意</strong>：這個說法與您的觀點相違，或您認為不正確。</div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon zero">？</div>
+        <div class="modal-step-text"><strong>中性／不確定</strong>：您沒有強烈意見，或暫時無法判斷。</div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon pos">＋</div>
+        <div class="modal-step-text"><strong>同意</strong>：這個說法與您的觀點相符，或您認為正確。</div>
+      </div>
+    </div>
+
+    <button class="btn primary modal-ok-btn" onclick="closeModal('presort')">了解了，開始分類</button>
+  </div>
+</div>
+
+<!-- ══ QSORT HELP MODAL ══ -->
+<div class="modal-overlay" id="modal-qsort" onclick="if(event.target===this)closeModal('qsort')">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('qsort')">✕</button>
+    <h3>Q Sort 排列說明</h3>
+    <p class="modal-sub">請根據您對每一張陳述句的同意程度，將所有卡片分配到右側的分佈格中。分佈格為強迫分配，每一欄的格數是固定的。</p>
+
+    <div class="modal-section">
+      <h4>排列規則</h4>
+      <div class="modal-step">
+        <div class="modal-step-icon info">1</div>
+        <div class="modal-step-text">分佈格從左到右代表<strong>最不同意（−5）</strong>到<strong>最同意（＋5）</strong>，中間為中立（0）。</div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon info">2</div>
+        <div class="modal-step-text">每一欄的格數固定，格子填滿後就無法再放入新卡片。</div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon info">3</div>
+        <div class="modal-step-text">54 張全部放置完畢後，才能點選「完成排列」送出。</div>
+      </div>
+    </div>
+
+    <div class="modal-divider"></div>
+    <div class="modal-section">
+      <h4>介面操作方式</h4>
+      <div class="modal-step">
+        <div class="modal-step-icon info">→</div>
+        <div class="modal-step-text"><strong>放置卡片</strong>：從左側待排區將卡片拖曳到右側任意一欄，卡片會自動落到該欄最底部的空格。</div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon info">↔</div>
+        <div class="modal-step-text"><strong>移動已排卡片</strong>：將已在分佈格的卡片拖曳到另一欄，同樣會自動落到底部。</div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon info">↩</div>
+        <div class="modal-step-text"><strong>退回待排區</strong>：<strong>單擊</strong>分佈格中的卡片，即可將它退回左側待排區。也可以直接將卡片拖回左欄。</div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon info">🔍</div>
+        <div class="modal-step-text"><strong>搜尋與篩選</strong>：左欄上方可輸入關鍵字搜尋，也可依初步分類結果（不同意／中性／同意）篩選顯示。</div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon info">A</div>
+        <div class="modal-step-text"><strong>字體大小</strong>：工具列的 − ＋ 按鈕可調整卡片文字大小（12–24px）。</div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon info">←</div>
+        <div class="modal-step-text"><strong>上一步 ／ 清除</strong>：工具列的「↩ 上一步」可撤回最近一次操作；「✕ 全部清除」可一次清空所有排列。</div>
+      </div>
+    </div>
+
+    <button class="btn primary modal-ok-btn" onclick="closeModal('qsort')">了解了，開始排列</button>
+  </div>
+</div>
+
+<!-- ══ DEV NAV ══ -->
 <div id="dev-nav" style="
   position:fixed; bottom:0; left:0; right:0; z-index:9999;
   background:#1A1A18; padding:6px 12px;
@@ -541,6 +706,7 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
         <span class="fs-label" id="fs-label">12px</span>
         <button class="fs-btn" onclick="changeFontSize(1)">+</button>
       </div>
+      <button class="help-btn" onclick="openModal('presort')" title="說明">？</button>
     </div>
     <div class="fc-body">
       <!-- progress -->
@@ -593,6 +759,7 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
           <span class="fs-label" id="fs-label2">12px</span>
           <button class="fs-btn" onclick="changeFontSize(1)">+</button>
         </div>
+        <button class="help-btn" onclick="openModal('qsort')" title="說明">？</button>
         <button class="tbtn" id="btn-undo" onclick="undoLast()" disabled>↩ 上一步</button>
         <button class="tbtn danger" id="btn-clear" onclick="clearAll()" disabled>✕ 全部清除</button>
         <button class="tbtn go" id="btn-next" onclick="submitQsort()">完成排列 →</button>
@@ -837,7 +1004,7 @@ let fcHistory = [];
 
 /* font-size state: 12–24px, default 16 */
 let cardFontSize = 12;
-const FS_MIN = 8, FS_MAX = 24;
+const FS_MIN = 12, FS_MAX = 24;
 
 function changeFontSize(delta) {
   cardFontSize = Math.min(FS_MAX, Math.max(FS_MIN, cardFontSize + delta));
@@ -856,12 +1023,19 @@ function genId() {
   return 'P-' + Math.random().toString(36).slice(2,8).toUpperCase();
 }
 
+function openModal(which) {
+  document.getElementById('modal-'+which).classList.add('open');
+}
+function closeModal(which) {
+  document.getElementById('modal-'+which).classList.remove('open');
+}
+
 function goTo(id) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  if (id === 'page-qsort') refreshQSort();
-  if (id === 'page-admin') loadAdmin();
-  if (id === 'page-presort') buildPresort();
+  if (id === 'page-qsort')   { refreshQSort(); openModal('qsort'); }
+  if (id === 'page-admin')   loadAdmin();
+  if (id === 'page-presort') { buildPresort(); openModal('presort'); }
 }
 
 function toggleConsent() {
