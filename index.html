@@ -56,7 +56,7 @@ window.dispatchEvent(new Event('firebase-ready'));
   --r:        8px;
   --r-lg:     12px;
 }
-body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; line-height: 1.5; }
+body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 16px; line-height: 1.5; }
 
 /* ══════════════════════════════════════════
    PAGE SYSTEM
@@ -159,10 +159,25 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
   display: flex; flex-direction: column; transition: background 0.2s;
 }
 .left-panel.over { background: var(--green-l); }
-.left-hdr { padding: 12px 14px 8px; border-bottom: 0.5px solid var(--border); }
+.left-hdr { padding: 10px 12px 8px; border-bottom: 0.5px solid var(--border); }
 .left-hdr p { font-size: 12px; color: var(--text2); margin-bottom: 6px; }
-.search { width: 100%; font-size: 13px; padding: 6px 10px; border: 0.5px solid var(--border); border-radius: var(--r); background: var(--bg); color: var(--text); outline: none; }
+.search { width: 100%; font-size: 13px; padding: 6px 10px; border: 0.5px solid var(--border); border-radius: var(--r); background: var(--bg); color: var(--text); outline: none; margin-bottom: 8px; }
 .search:focus { border-color: var(--border2); }
+
+/* pile filter chips */
+.pile-filter-row { display: flex; gap: 4px; flex-wrap: wrap; }
+.pile-chip {
+  font-size: 11px; padding: 3px 8px; border-radius: 20px;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--text2); cursor: pointer; font-family: inherit;
+  transition: all 0.15s; white-space: nowrap;
+}
+.pile-chip:hover { border-color: var(--border2); background: var(--bg2); }
+.pile-chip.active-neg  { background: #FDF3F0; border-color: #F0997B; color: var(--red); }
+.pile-chip.active-zero { background: var(--bg2); border-color: var(--border2); color: var(--text2); }
+.pile-chip.active-pos  { background: #F0FAF6; border-color: #9FE1CB; color: var(--green-d); }
+.pile-chip.active-all  { background: var(--bg2); border-color: var(--border2); color: var(--text2); }
+
 .card-list { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
 .card-list::-webkit-scrollbar { width: 4px; }
 .card-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
@@ -192,33 +207,32 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 .col-lbl.zero { color: var(--text3); }
 
 .dist-grid { display: flex; gap: 4px; }
-.dist-col  { flex: 1; display: flex; flex-direction: column; gap: 4px; }
 
 .dist-slot {
-  min-height: 54px; border: 0.5px dashed var(--border);
-  border-radius: var(--r); display: flex; align-items: center; justify-content: center;
+  border: 0.5px dashed var(--border);
+  border-radius: var(--r); display: flex; align-items: stretch; justify-content: center;
   transition: border-color 0.12s, background 0.12s;
+  min-height: 44px;
 }
-.dist-slot.over          { border-color: var(--green); background: var(--green-l); border-style: solid; }
+.dist-slot.over          { border-color: var(--border2); background: rgba(0,0,0,0.07); border-style: solid; }
 .dist-slot.over-displace { border-color: var(--amber); background: var(--amber-l); border-style: solid; }
 .dist-slot.filled        { border-style: solid; border-color: var(--border); }
 
-.col-neg5 .dist-slot.filled { border-color: #F0997B; }
-.col-neg4 .dist-slot.filled { border-color: #FAC775; }
-.col-pos4 .dist-slot.filled { border-color: #9FE1CB; }
-.col-pos5 .dist-slot.filled { border-color: #5DCAA5; }
+/* column background tints — set via inline style in buildGrid */
+.dist-col { flex: 1; display: flex; flex-direction: column; gap: 4px; border-radius: var(--r); padding: 4px; }
 
 .slot-card {
-  width: 100%; min-height: 54px; padding: 5px 7px;
-  display: flex; flex-direction: column; justify-content: center;
-  font-size: 11px; line-height: 1.35; cursor: grab;
+  width: 100%; padding: 6px 7px;
+  display: flex; flex-direction: column; justify-content: flex-start;
+  font-size: var(--card-fs,16px); line-height: 1.45; cursor: grab;
   border-radius: calc(var(--r) - 1px); user-select: none; color: var(--text);
+  background: rgba(255,255,255,0.60);
   transition: background 0.15s;
 }
-.slot-card:hover   { background: var(--bg2); }
+.slot-card:hover   { background: rgba(255,255,255,0.95); }
 .slot-card.dragging { opacity: 0.35; }
-.slot-num { font-size: 9px; font-weight: 500; color: var(--text3); }
-.slot-txt { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.slot-num { font-size: calc(var(--card-fs,16px) - 4px); font-weight: 500; color: var(--text3); margin-bottom: 2px; }
+.slot-txt { line-height: 1.5; word-break: break-word; white-space: normal; }
 .dist-hint { font-size: 10px; color: var(--text3); }
 
 .col-stats { font-size: 11px; color: var(--text3); text-align: center; }
@@ -259,6 +273,14 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; }
 .badge.complete { background: var(--green-l); color: var(--green-d); }
 .badge.partial  { background: var(--amber-l); color: #8a6000; }
+.del-btn { font-size: 11px; padding: 3px 10px; border-radius: var(--r); border: 0.5px solid var(--border); background: transparent; color: var(--text3); cursor: pointer; font-family: inherit; white-space: nowrap; transition: all 0.15s; }
+.del-btn:hover { border-color: var(--red); color: var(--red); background: var(--red-l); }
+
+/* validation */
+.field-err { font-size: 11px; color: var(--red); margin-top: 5px; display: none; }
+.field.invalid .field-err { display: block; }
+.field.invalid input, .field.invalid select { border-color: var(--red); }
+.field.invalid .radio-group { outline: 1.5px solid var(--red); border-radius: var(--r); padding: 6px 8px; }
 
 /* login */
 .login-shell { flex: 1; display: flex; align-items: center; justify-content: center; }
@@ -285,9 +307,112 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
   80%    { transform:translateX(3px); }
 }
 .shake { animation: shake .35s ease; }
+
+/* ══════════════════════════════════════════
+   PRE-SORT FLASHCARD PAGE
+══════════════════════════════════════════ */
+#presort-app { display:flex; flex-direction:column; height:100vh; }
+
+.presort-top {
+  padding:10px 16px; background:var(--surface);
+  border-bottom:0.5px solid var(--border);
+  display:flex; align-items:center; gap:12px; flex-shrink:0;
+}
+.presort-top h1 { font-size:14px; font-weight:500; color:var(--text2); white-space:nowrap; flex:1; }
+
+.fc-body {
+  flex:1; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  padding:32px 24px 24px; gap:28px;
+}
+
+.fc-progress-wrap { width:100%; max-width:600px; display:flex; align-items:center; gap:12px; }
+.fc-prog-bar  { flex:1; height:4px; background:var(--bg2); border-radius:2px; overflow:hidden; }
+.fc-prog-fill { height:100%; background:var(--green); border-radius:2px; transition:width 0.3s; }
+.fc-prog-text { font-size:12px; color:var(--text3); white-space:nowrap; min-width:48px; text-align:right; }
+
+.fc-card-wrap { width:100%; max-width:600px; }
+.fc-card {
+  background:var(--surface); border:0.5px solid var(--border);
+  border-radius:var(--r-lg); padding:40px 44px;
+  font-size:var(--card-fs,16px); line-height:1.75;
+  text-align:center; min-height:160px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  transition:transform 0.15s ease, opacity 0.15s ease;
+}
+.fc-card.exit-left  { transform:translateX(-50px); opacity:0; pointer-events:none; }
+.fc-card.exit-right { transform:translateX(50px);  opacity:0; pointer-events:none; }
+.fc-card-num { font-size:11px; color:var(--text3); margin-bottom:10px; }
+
+.fc-btns { display:flex; gap:12px; width:100%; max-width:600px; }
+.fc-btn {
+  flex:1; padding:14px 10px; border-radius:var(--r);
+  border:1.5px solid var(--border); background:var(--surface);
+  cursor:pointer; font-family:inherit;
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  transition:background 0.12s, border-color 0.12s, transform 0.1s;
+  user-select:none;
+}
+.fc-btn:active { transform:scale(0.97); }
+.fc-btn .fc-lbl { font-size:15px; font-weight:600; }
+.fc-btn .fc-key { font-size:11px; color:var(--text3); }
+.fc-btn.neg  { border-color:#F0997B; }
+.fc-btn.neg:hover  { background:#FDF3F0; border-color:var(--red); }
+.fc-btn.zero:hover { background:var(--bg2); border-color:var(--border2); }
+.fc-btn.pos  { border-color:#9FE1CB; }
+.fc-btn.pos:hover  { background:#F0FAF6; border-color:var(--green); }
+.fc-btn.flash-neg  { background:#FDF3F0; border-color:var(--red); }
+.fc-btn.flash-zero { background:var(--bg2); border-color:var(--border2); }
+.fc-btn.flash-pos  { background:#F0FAF6; border-color:var(--green); }
+
+.fc-undo-row { display:flex; align-items:center; gap:10px; }
+.fc-undo-btn {
+  font-size:12px; padding:5px 14px; border-radius:var(--r);
+  border:0.5px solid var(--border); background:transparent;
+  color:var(--text2); cursor:pointer; font-family:inherit; transition:background 0.15s;
+}
+.fc-undo-btn:hover:not(:disabled) { background:var(--bg2); }
+.fc-undo-btn:disabled { opacity:0.3; cursor:not-allowed; }
+
+/* font-size control */
+.fs-ctrl { display:flex; align-items:center; gap:4px; }
+.fs-btn {
+  width:26px; height:26px; border-radius:var(--r); border:0.5px solid var(--border);
+  background:transparent; color:var(--text2); cursor:pointer; font-size:14px;
+  display:flex; align-items:center; justify-content:center;
+  transition:background 0.15s; line-height:1; font-family:inherit;
+}
+.fs-btn:hover { background:var(--bg2); color:var(--text); }
+.fs-label { font-size:11px; color:var(--text3); min-width:28px; text-align:center; }
+
+/* cards in qsort respect font-size variable */
+.stmt-card, .slot-card { font-size:var(--card-fs,16px); }
+.slot-num, .card-num { font-size:calc(var(--card-fs,16px) - 3px) !important; }
+
+/* validation */
+.field-err { font-size:11px; color:var(--red); margin-top:5px; display:none; }
+.field.invalid .field-err { display:block; }
+.field.invalid input, .field.invalid select { border-color:var(--red); }
+.field.invalid .radio-group { outline:1.5px solid var(--red); border-radius:var(--r); padding:6px 8px; }
 </style>
 </head>
 <body>
+
+<!-- ══ DEV NAV — remove before publishing ══ -->
+<div id="dev-nav" style="
+  position:fixed; bottom:0; left:0; right:0; z-index:9999;
+  background:#1A1A18; padding:6px 12px;
+  display:flex; align-items:center; gap:6px; flex-wrap:wrap;
+">
+  <span style="font-size:11px;color:#9A9A93;margin-right:4px;">🛠 測試跳轉：</span>
+  <button onclick="document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-intro').classList.add('active')"     style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #444;background:transparent;color:#ccc;cursor:pointer;">同意書</button>
+  <button onclick="document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-profile').classList.add('active')"   style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #444;background:transparent;color:#ccc;cursor:pointer;">基本資料</button>
+  <button onclick="document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-presort').classList.add('active');if(!piles.unplaced.length){piles={unplaced:[...STATEMENTS.map(s=>s.id)],neg:[],zero:[],pos:[]};fcHistory=[];}buildPresort();" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #444;background:transparent;color:#ccc;cursor:pointer;">初步分類</button>
+  <button onclick="document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-qsort').classList.add('active');if(!piles.pos.length&&!piles.neg.length){piles={unplaced:[],neg:STATEMENTS.slice(0,18).map(s=>s.id),zero:STATEMENTS.slice(18,36).map(s=>s.id),pos:STATEMENTS.slice(36).map(s=>s.id)};}refreshQSort();" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #444;background:transparent;color:#ccc;cursor:pointer;">Q Sort</button>
+  <button onclick="document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-post').classList.add('active')"      style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #444;background:transparent;color:#ccc;cursor:pointer;">後排序問題</button>
+  <button onclick="document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-done').classList.add('active')"      style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #444;background:transparent;color:#ccc;cursor:pointer;">完成頁</button>
+  <button onclick="document.getElementById('dev-nav').style.display='none'" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #666;background:transparent;color:#888;cursor:pointer;margin-left:auto;">隱藏</button>
+</div>
 
 <!-- ══════════════════════════════════════
      PAGE 1 — CONSENT
@@ -297,7 +422,7 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
     <div class="form-card">
       <div class="step-bar">
         <div class="step-dot active"></div><div class="step-dot"></div>
-        <div class="step-dot"></div><div class="step-dot"></div>
+        <div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div>
       </div>
       <h2>研究說明與知情同意</h2>
       <div class="sub">
@@ -332,12 +457,12 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
     <div class="form-card">
       <div class="step-bar">
         <div class="step-dot done"></div><div class="step-dot active"></div>
-        <div class="step-dot"></div><div class="step-dot"></div>
+        <div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div>
       </div>
       <h2>基本資料</h2>
       <p class="sub">以下資料僅供研究分析使用，不會揭露您的個人身分。標示 * 為必填。</p>
 
-      <div class="field">
+      <div class="field" id="field-f">
         <label>所屬學術領域 *</label>
         <select id="p-field">
           <option value="">請選擇</option>
@@ -347,8 +472,9 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
           <option>哲學</option><option>地理學</option><option>經濟學</option>
           <option>其他人文社會科學領域</option>
         </select>
+        <div class="field-err">請選擇您的學術領域</div>
       </div>
-      <div class="field">
+      <div class="field" id="field-pos">
         <label>目前職位 *</label>
         <div class="radio-group">
           <label><input type="radio" name="position" value="教授／副教授／助理教授"> 教授／副教授／助理教授</label>
@@ -357,16 +483,18 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
           <label><input type="radio" name="position" value="碩士生"> 碩士生</label>
           <label><input type="radio" name="position" value="其他"> 其他</label>
         </div>
+        <div class="field-err">請選擇您的職位</div>
       </div>
-      <div class="field">
+      <div class="field" id="field-yr">
         <label>學術年資（取得最高學位後）*</label>
         <select id="p-years">
           <option value="">請選擇</option>
           <option>目前仍在學</option><option>1–3 年</option><option>4–7 年</option>
           <option>8–15 年</option><option>16 年以上</option>
         </select>
+        <div class="field-err">請選擇您的學術年資</div>
       </div>
-      <div class="field">
+      <div class="field" id="field-ai">
         <label>您目前使用 AI 工具輔助研究的頻率 *</label>
         <div class="radio-group">
           <label><input type="radio" name="aiuse" value="從未使用"> 從未使用</label>
@@ -375,11 +503,59 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
           <label><input type="radio" name="aiuse" value="經常使用（每週數次）"> 經常使用（每週數次）</label>
           <label><input type="radio" name="aiuse" value="幾乎每天使用"> 幾乎每天使用</label>
         </div>
+        <div class="field-err">請選擇您的 AI 使用頻率</div>
       </div>
 
       <div class="btn-row">
         <button class="btn" onclick="goTo('page-intro')">上一步</button>
-        <button class="btn primary" onclick="startQSort()">下一步：開始 Q 排序</button>
+        <button class="btn primary" onclick="startQSort()">下一步：初步分類</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 2.5 — PRE-SORT FLASHCARD
+══════════════════════════════════════ -->
+<div class="page" id="page-presort">
+  <div id="presort-app">
+    <div class="presort-top">
+      <h1>第一步：初步分類</h1>
+      <div class="fs-ctrl">
+        <button class="fs-btn" onclick="changeFontSize(-1)">−</button>
+        <span class="fs-label" id="fs-label">16px</span>
+        <button class="fs-btn" onclick="changeFontSize(1)">+</button>
+      </div>
+    </div>
+    <div class="fc-body">
+      <!-- progress -->
+      <div class="fc-progress-wrap">
+        <div class="fc-prog-bar"><div class="fc-prog-fill" id="fc-prog-fill" style="width:0%"></div></div>
+        <div class="fc-prog-text" id="fc-prog-text">0 / 54</div>
+      </div>
+      <!-- card -->
+      <div class="fc-card-wrap">
+        <div class="fc-card" id="fc-card">
+          <div class="fc-card-num" id="fc-card-num">#1</div>
+          <div id="fc-card-text"></div>
+        </div>
+      </div>
+      <!-- buttons -->
+      <div class="fc-btns">
+        <button class="fc-btn neg"  onclick="fcVote('neg')"  id="fc-btn-neg">
+          <span class="fc-lbl">不同意</span>
+        </button>
+        <button class="fc-btn zero" onclick="fcVote('zero')" id="fc-btn-zero">
+          <span class="fc-lbl">中性／不確定</span>
+        </button>
+        <button class="fc-btn pos"  onclick="fcVote('pos')"  id="fc-btn-pos">
+          <span class="fc-lbl">同意</span>
+        </button>
+      </div>
+      <!-- undo row -->
+      <div class="fc-undo-row">
+        <button class="fc-undo-btn" id="fc-undo-btn" onclick="fcUndo()" disabled>↩ 上一步</button>
+        <span id="fc-undo-hint" style="font-size:11px;color:var(--text3);"></span>
       </div>
     </div>
   </div>
@@ -397,6 +573,11 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
         <div class="prog-text" id="prog-text">已排：0 / 54</div>
       </div>
       <div class="toolbar">
+        <div class="fs-ctrl">
+          <button class="fs-btn" onclick="changeFontSize(-1)">−</button>
+          <span class="fs-label" id="fs-label2">16px</span>
+          <button class="fs-btn" onclick="changeFontSize(1)">+</button>
+        </div>
         <button class="tbtn" id="btn-undo" onclick="undoLast()" disabled>↩ 上一步</button>
         <button class="tbtn danger" id="btn-clear" onclick="clearAll()" disabled>✕ 全部清除</button>
         <button class="tbtn go" id="btn-next" onclick="submitQsort()">完成排列 →</button>
@@ -407,6 +588,12 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
         <div class="left-hdr">
           <p id="remaining-lbl">待排 <strong>54</strong> 張</p>
           <input class="search" type="text" placeholder="搜尋陳述句…" oninput="filterCards(this.value)">
+          <div class="pile-filter-row">
+            <button class="pile-chip active-all" data-pile="all"  onclick="setPileFilter('all')">全部</button>
+            <button class="pile-chip" data-pile="neg"  onclick="setPileFilter('neg')">不同意</button>
+            <button class="pile-chip" data-pile="zero" onclick="setPileFilter('zero')">中性</button>
+            <button class="pile-chip" data-pile="pos"  onclick="setPileFilter('pos')">同意</button>
+          </div>
         </div>
         <div class="card-list" id="card-list"></div>
       </div>
@@ -417,7 +604,6 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
           <span class="end-lbl" style="color:var(--green)">同意 →</span>
         </div>
         <div class="dist-grid" id="dist-grid"></div>
-        <div class="col-stats" id="col-stats"></div>
       </div>
     </div>
   </div>
@@ -431,7 +617,7 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
     <div class="form-card" style="max-width:620px">
       <div class="step-bar">
         <div class="step-dot done"></div><div class="step-dot done"></div>
-        <div class="step-dot done"></div><div class="step-dot active"></div>
+        <div class="step-dot done"></div><div class="step-dot done"></div><div class="step-dot active"></div>
       </div>
       <h2>後排序問題</h2>
       <p class="sub">您已完成 Q 排序，感謝您的耐心。以下幾個問題想進一步了解您的排列思考，請以 2–4 句話簡短回答即可。</p>
@@ -531,10 +717,10 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
       <thead>
         <tr>
           <th>受試者 ID</th><th>完成時間</th><th>領域</th><th>職位</th>
-          <th>AI 使用頻率</th><th>排列時間</th><th>狀態</th>
+          <th>AI 使用頻率</th><th>排列時間</th><th>狀態</th><th></th>
         </tr>
       </thead>
-      <tbody id="resp-tbody"><tr><td colspan="7" style="text-align:center;color:var(--text3);padding:24px">載入中…</td></tr></tbody>
+      <tbody id="resp-tbody"><tr><td colspan="8" style="text-align:center;color:var(--text3);padding:24px">載入中…</td></tr></tbody>
     </table>
   </div>
 </div>
@@ -626,7 +812,26 @@ let history         = [];
 let dragSource      = null;
 let dragSourceType  = null;
 let searchQuery     = '';
+let pileFilter      = 'all';   // 'all' | 'neg' | 'zero' | 'pos'
 let allResponses    = [];
+
+/* pile-sort state — arrays now (flashcard queue) */
+let piles = { unplaced:[], neg:[], zero:[], pos:[] };
+let fcHistory = [];
+
+/* font-size state: 12–24px, default 16 */
+let cardFontSize = 16;
+const FS_MIN = 12, FS_MAX = 24;
+
+function changeFontSize(delta) {
+  cardFontSize = Math.min(FS_MAX, Math.max(FS_MIN, cardFontSize + delta));
+  document.documentElement.style.setProperty('--card-fs', cardFontSize + 'px');
+  document.querySelectorAll('.fs-label').forEach(el => el.textContent = cardFontSize + 'px');
+}
+function initFontSize() {
+  document.documentElement.style.setProperty('--card-fs', cardFontSize + 'px');
+  document.querySelectorAll('.fs-label').forEach(el => el.textContent = cardFontSize + 'px');
+}
 
 /* ══════════════════════════════════════
    UTILITIES
@@ -640,6 +845,7 @@ function goTo(id) {
   document.getElementById(id).classList.add('active');
   if (id === 'page-qsort') refreshQSort();
   if (id === 'page-admin') loadAdmin();
+  if (id === 'page-presort') buildPresort();
 }
 
 function toggleConsent() {
@@ -689,18 +895,147 @@ function badge(el, state, msg) {
 /* ══════════════════════════════════════
    FLOW FUNCTIONS
 ══════════════════════════════════════ */
+function validateProfile() {
+  const checks = [
+    { id:'field-f',  ok: !!document.getElementById('p-field').value },
+    { id:'field-pos',ok: !!document.querySelector('input[name=position]:checked') },
+    { id:'field-yr', ok: !!document.getElementById('p-years').value },
+    { id:'field-ai', ok: !!document.querySelector('input[name=aiuse]:checked') },
+  ];
+  let valid = true;
+  checks.forEach(c => {
+    const el = document.getElementById(c.id);
+    if (!c.ok) { el.classList.add('invalid'); valid = false; }
+    else        { el.classList.remove('invalid'); }
+  });
+  if (!valid) {
+    document.querySelector('.field.invalid')
+      ?.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+  return valid;
+}
+
 async function startQSort() {
+  if (!validateProfile()) return;
+
   participantId = genId();
   startedAt = Date.now();
 
-  // save profile immediately
+  piles = { unplaced:[...STATEMENTS.map(s=>s.id)], neg:[], zero:[], pos:[] };
+  fcHistory = [];
+
   const profile = collectProfile();
   try {
     await saveToFirebase({ background: profile, status: 'started' });
   } catch(e) { console.warn('Firebase save failed', e); }
 
+  goTo('page-presort');
+}
+
+/* ══════════════════════════════════════
+   FLASHCARD PRE-SORT ENGINE
+══════════════════════════════════════ */
+// piles.unplaced is now an ordered array (queue), others are arrays too
+function buildPresort() {
+  fcRenderCard();
+  fcUpdateProgress();
+}
+
+function fcCurrentId() {
+  return piles.unplaced[0] ?? null;
+}
+
+function fcRenderCard(animDir) {
+  const id = fcCurrentId();
+  const card = document.getElementById('fc-card');
+
+  if (id === null) {
+    // all done — auto-advance
+    presortToQsort();
+    return;
+  }
+
+  const stmt = STATEMENTS.find(s=>s.id===id);
+
+  if (animDir) {
+    card.classList.add(animDir==='left'?'exit-left':'exit-right');
+    setTimeout(()=>{
+      card.classList.remove('exit-left','exit-right');
+      document.getElementById('fc-card-num').textContent = '#'+stmt.id;
+      document.getElementById('fc-card-text').textContent = stmt.text;
+      fcUpdateProgress();
+    }, 150);
+  } else {
+    document.getElementById('fc-card-num').textContent = '#'+stmt.id;
+    document.getElementById('fc-card-text').textContent = stmt.text;
+    fcUpdateProgress();
+  }
+}
+
+function fcVote(pile) {
+  const id = fcCurrentId();
+  if (id === null) return;
+
+  // flash button
+  const btnMap = {neg:'fc-btn-neg', zero:'fc-btn-zero', pos:'fc-btn-pos'};
+  const flashMap = {neg:'flash-neg', zero:'flash-zero', pos:'flash-pos'};
+  const btn = document.getElementById(btnMap[pile]);
+  btn.classList.add(flashMap[pile]);
+  setTimeout(()=>btn.classList.remove(flashMap[pile]), 200);
+
+  // move card
+  piles.unplaced.shift();
+  piles[pile].push(id);
+  fcHistory.push({id, pile});
+  document.getElementById('fc-undo-btn').disabled = false;
+
+  fcRenderCard(pile==='neg'?'left':'right');
+}
+
+function fcUndo() {
+  if (!fcHistory.length) return;
+  const last = fcHistory.pop();
+  // remove from pile it went to
+  const arr = piles[last.pile];
+  arr.splice(arr.lastIndexOf(last.id), 1);
+  // put back at front of unplaced
+  piles.unplaced.unshift(last.id);
+  document.getElementById('fc-undo-btn').disabled = !fcHistory.length;
+
+  // show hint of what it was classified as
+  const labels = {neg:'不同意', zero:'中性', pos:'同意'};
+  document.getElementById('fc-undo-hint').textContent =
+    `已取消：「${labels[last.pile]}」`;
+  setTimeout(()=>{
+    document.getElementById('fc-undo-hint').textContent='';
+  }, 1800);
+
+  fcRenderCard('left');
+}
+
+function fcUpdateProgress() {
+  const done  = STATEMENTS.length - piles.unplaced.length;
+  const total = STATEMENTS.length;
+  const pct   = Math.round(done/total*100);
+  document.getElementById('fc-prog-fill').style.width = pct+'%';
+  document.getElementById('fc-prog-text').textContent = done+' / '+total;
+}
+
+function presortToQsort() {
+  // gate: all must be classified
+  if (piles.unplaced.length > 0) {
+    alert(`還有 ${piles.unplaced.length} 張陳述句尚未分類，請繼續完成。`);
+    return;
+  }
   goTo('page-qsort');
 }
+
+/* keyboard shortcuts for flashcard — undo only */
+function fcKeyHandler(e) {
+  if (!document.getElementById('page-presort').classList.contains('active')) return;
+  if (e.key==='Backspace'||e.key==='z') fcUndo();
+}
+document.addEventListener('keydown', fcKeyHandler);
 
 function collectProfile() {
   return {
@@ -714,16 +1049,15 @@ function collectProfile() {
 async function submitQsort() {
   const placed = Object.keys(placement).length;
   if (placed < TOTAL) {
-    alert(`還有 ${TOTAL - placed} 張陳述句尚未排列，請完成後再繼續。`);
+    const remaining = TOTAL - placed;
+    alert(`還有 ${remaining} 張陳述句尚未放入分佈格，請完成所有排列後再繼續。`);
     return;
   }
-  // save qsort data
   const qsortData = {};
   STATEMENTS.forEach(s => { qsortData[String(s.id)] = placement[s.id]?.score ?? null; });
   try {
     await saveToFirebase({ qsort: qsortData, status: 'qsort_done' });
   } catch(e) { console.warn('Firebase save failed', e); }
-
   goTo('page-post');
 }
 
@@ -914,6 +1248,16 @@ function buildGrid() {
   const gridEl   = document.getElementById('dist-grid');
   labelsEl.innerHTML = ''; gridEl.innerHTML = '';
 
+  // gentle gradient tints: neg side red→neutral, pos side neutral→green
+  const colTints = {
+    '-5': 'rgba(216,90,48,0.14)', '-4': 'rgba(216,90,48,0.10)',
+    '-3': 'rgba(216,90,48,0.07)', '-2': 'rgba(216,90,48,0.04)',
+    '-1': 'rgba(216,90,48,0.015)', '0': 'rgba(0,0,0,0)',
+     '1': 'rgba(29,158,117,0.015)','2': 'rgba(29,158,117,0.04)',
+     '3': 'rgba(29,158,117,0.07)', '4': 'rgba(29,158,117,0.10)',
+     '5': 'rgba(29,158,117,0.14)',
+  };
+
   COLS.forEach(col => {
     const s = col.score;
     const lbl = document.createElement('div');
@@ -923,6 +1267,7 @@ function buildGrid() {
 
     const colDiv = document.createElement('div');
     colDiv.className = 'dist-col '+(s===0?'col-0':(s<0?'col-neg'+Math.abs(s):'col-pos'+s));
+    colDiv.style.background = colTints[String(s)] || 'transparent';
 
     for (let i=0; i<col.slots; i++) {
       const slot = document.createElement('div');
@@ -957,15 +1302,38 @@ function renderSlotCard(slot, stmtId) {
   card.addEventListener('dragstart', e=>{ isDragging=true; dragSource=stmtId; dragSourceType='slot'; setTimeout(()=>card.classList.add('dragging'),0); e.dataTransfer.effectAllowed='move'; });
   card.addEventListener('dragend', ()=>{ card.classList.remove('dragging'); setTimeout(()=>{ isDragging=false; },50); });
   card.addEventListener('click', ()=>{ if (!isDragging) clickReturn(stmtId); });
-  card.addEventListener('mouseover', e=>showTT(stmt.text,e));
-  card.addEventListener('mousemove', moveTT);
-  card.addEventListener('mouseout', hideTT);
   slot.appendChild(card);
+}
+
+function setPileFilter(pile) {
+  pileFilter = pile;
+  // update chip active states
+  document.querySelectorAll('.pile-chip').forEach(c => {
+    c.className = 'pile-chip';
+    if (c.dataset.pile === pile) c.classList.add('active-'+pile);
+  });
+  buildCards();
 }
 
 function buildCards(highlightId) {
   const el = document.getElementById('card-list');
-  const unplaced = STATEMENTS.filter(s=>!placement[s.id]);
+
+  const pileOrder = id => {
+    if (piles.neg.includes(id))  return 0;
+    if (piles.zero.includes(id)) return 1;
+    if (piles.pos.includes(id))  return 2;
+    return 3;
+  };
+
+  let unplaced = STATEMENTS
+    .filter(s=>!placement[s.id])
+    .sort((a,b)=>pileOrder(a.id)-pileOrder(b.id));
+
+  // apply pile filter
+  if (pileFilter !== 'all') {
+    unplaced = unplaced.filter(s => piles[pileFilter].includes(s.id));
+  }
+
   const filtered = searchQuery
     ? unplaced.filter(s=>s.text.includes(searchQuery)||String(s.id).includes(searchQuery))
     : unplaced;
@@ -974,21 +1342,23 @@ function buildCards(highlightId) {
   filtered.forEach(stmt => {
     const card = document.createElement('div');
     const returned = stmt.id === highlightId;
+    const pileClass = piles.neg.includes(stmt.id)?'neg': piles.pos.includes(stmt.id)?'pos': piles.zero.includes(stmt.id)?'zero':'';
     card.className = 'stmt-card'+(returned?' pop-in':'');
+    if (pileClass==='neg')  card.style.borderLeft='2.5px solid #F0997B';
+    if (pileClass==='pos')  card.style.borderLeft='2.5px solid #9FE1CB';
+    if (pileClass==='zero') card.style.borderLeft='2.5px solid var(--border2)';
     card.draggable = true;
     card.innerHTML = `<div class="card-num">#${stmt.id}</div><div class="card-txt">${stmt.text}</div>`;
     card.addEventListener('dragstart', e=>{ dragSource=stmt.id; dragSourceType='list'; setTimeout(()=>card.classList.add('dragging'),0); e.dataTransfer.effectAllowed='move'; });
     card.addEventListener('dragend', ()=>card.classList.remove('dragging'));
-    card.addEventListener('mouseover', e=>showTT(stmt.text,e));
-    card.addEventListener('mousemove', moveTT);
-    card.addEventListener('mouseout', hideTT);
     el.appendChild(card);
     if (returned) setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'nearest'}),30);
   });
 
-  if (!filtered.length && searchQuery)
-    el.innerHTML='<div style="font-size:12px;color:var(--text3);text-align:center;padding:16px">找不到符合的陳述句</div>';
-  if (!unplaced.length && !searchQuery)
+  const totalUnplaced = STATEMENTS.filter(s=>!placement[s.id]).length;
+  if (!filtered.length && (searchQuery || pileFilter!=='all'))
+    el.innerHTML='<div style="font-size:12px;color:var(--text3);text-align:center;padding:16px">此篩選條件下無待排陳述句</div>';
+  else if (!totalUnplaced && !searchQuery)
     el.innerHTML='<div style="font-size:12px;color:var(--green);text-align:center;padding:16px">所有陳述句已排列完成 ✓</div>';
 }
 
@@ -1000,13 +1370,6 @@ function updateStats() {
   document.getElementById('btn-next').classList.toggle('ready', placed===TOTAL);
   document.getElementById('btn-undo').disabled  = !history.length;
   document.getElementById('btn-clear').disabled = !placed;
-
-  const stats = COLS.map(col=>{
-    const used = Object.values(placement).filter(p=>p.score===col.score).length;
-    const lbl  = col.score>0?'+'+col.score:col.score;
-    return `<span style="color:${used===col.slots?'var(--green)':'var(--text3)'};">${lbl}:${used}/${col.slots}</span>`;
-  }).join(' ');
-  document.getElementById('col-stats').innerHTML = stats;
 }
 
 function refreshQSort(highlightId) { buildGrid(); buildCards(highlightId); updateStats(); }
@@ -1037,6 +1400,7 @@ function hideTT(){ document.getElementById('tooltip').classList.remove('show'); 
 ══════════════════════════════════════ */
 refreshQSort();
 setupLeftDrop();
+initFontSize();
 checkRoute();
 </script>
 </body>
