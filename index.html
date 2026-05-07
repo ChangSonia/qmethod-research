@@ -234,6 +234,7 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 
 /* column background tints — set via inline style in buildGrid */
 .dist-col { flex: 1; display: flex; flex-direction: column; gap: 4px; border-radius: var(--r); padding: 4px; }
+.dist-col.col-over { outline: 1.5px dashed var(--border2); filter: brightness(0.90); }
 
 .slot-card {
   width: 100%; padding: 6px 7px;
@@ -1257,30 +1258,64 @@ function isColFull(score) {
   return Object.values(placement).filter(p=>p.score===score).length >= col.slots;
 }
 
+/* Pack all cards in every column to the bottom, preserving top→bottom order */
+function compactColumns() {
+  COLS.forEach(col => {
+    const s = col.score;
+    const cards = Object.entries(placement)
+      .filter(([,p]) => p.score === s)
+      .sort((a,b) => a[1].idx - b[1].idx);   // preserve relative order
+    const startIdx = col.slots - cards.length; // first filled slot (bottom-pack)
+    cards.forEach(([id], i) => {
+      placement[id] = { score: s, idx: startIdx + i };
+    });
+  });
+}
+
+/* Drop any card (list OR placed slot) onto a column — gravity auto-place */
+function dropOnColumn(score, srcId, srcType) {
+  if (!srcId) return;
+
+  // capacity check (for slot drag, account for the card leaving its source column)
+  if (srcType === 'slot') {
+    const isSameCol = placement[srcId]?.score === score;
+    if (!isSameCol) {
+      const countInTarget = Object.values(placement).filter(p=>p.score===score).length;
+      const cap = COLS.find(c=>c.score===score).slots;
+      if (countInTarget >= cap) return;
+    }
+  } else {
+    if (isColFull(score)) return;
+  }
+
+  snapshot();
+  if (srcType === 'slot') delete placement[srcId]; // vacate current slot first
+  // assign to any free slot — compactColumns will position to bottom
+  const col = COLS.find(c=>c.score===score);
+  for (let i=0; i<col.slots; i++) {
+    if (getOccupant(score, i) === null) { placement[srcId] = { score, idx: i }; break; }
+  }
+  compactColumns();
+  refreshQSort();
+}
+
+/* Slot-to-slot exact swap (only for already-placed cards) */
 function dropOnSlot(toScore, toIdx) {
-  if (!dragSource) return;
+  if (!dragSource || dragSourceType !== 'slot') return;
   snapshot();
   const existing = getOccupant(toScore, toIdx);
-  let returnedId = null;
-
-  if (dragSourceType === 'list') {
-    if (existing !== null) { delete placement[existing]; returnedId = existing; }
-    else if (isColFull(toScore)) { history.pop(); dragSource=null; dragSourceType=null; return; }
-    placement[dragSource] = {score: toScore, idx: toIdx};
-  } else {
-    if (existing !== null && existing !== dragSource) {
-      placement[existing] = {score: placement[dragSource].score, idx: placement[dragSource].idx};
-      returnedId = existing;
-    }
-    placement[dragSource] = {score: toScore, idx: toIdx};
+  if (existing !== null && existing !== dragSource) {
+    placement[existing] = { score: placement[dragSource].score, idx: placement[dragSource].idx };
   }
+  placement[dragSource] = { score: toScore, idx: toIdx };
   dragSource = null; dragSourceType = null;
-  refreshQSort(returnedId);
+  refreshQSort();
 }
 
 function clickReturn(stmtId) {
   snapshot();
   delete placement[stmtId];
+  compactColumns();
   refreshQSort(stmtId);
 }
 
@@ -1289,7 +1324,6 @@ function buildGrid() {
   const gridEl   = document.getElementById('dist-grid');
   labelsEl.innerHTML = ''; gridEl.innerHTML = '';
 
-  // gentle gradient tints: neg side red→neutral, pos side neutral→green
   const colTints = {
     '-5': 'rgba(216,90,48,0.14)', '-4': 'rgba(216,90,48,0.10)',
     '-3': 'rgba(216,90,48,0.07)', '-2': 'rgba(216,90,48,0.04)',
@@ -1310,6 +1344,27 @@ function buildGrid() {
     colDiv.className = 'dist-col '+(s===0?'col-0':(s<0?'col-neg'+Math.abs(s):'col-pos'+s));
     colDiv.style.background = colTints[String(s)] || 'transparent';
 
+    /* ── column-level events (handles BOTH list and slot drags) ── */
+    colDiv.addEventListener('dragover', e => {
+      if (!dragSource) return;
+      const isSameCol = dragSourceType === 'slot' && placement[dragSource]?.score === s;
+      const countInTarget = Object.values(placement).filter(p=>p.score===s).length;
+      const cap = col.slots;
+      const hasRoom = isSameCol || countInTarget < cap;
+      if (hasRoom) { e.preventDefault(); colDiv.classList.add('col-over'); }
+    });
+    colDiv.addEventListener('dragleave', e => {
+      if (!colDiv.contains(e.relatedTarget)) colDiv.classList.remove('col-over');
+    });
+    colDiv.addEventListener('drop', e => {
+      e.preventDefault();
+      colDiv.classList.remove('col-over');
+      const srcId = dragSource; const srcType = dragSourceType;
+      dragSource = null; dragSourceType = null;
+      dropOnColumn(s, srcId, srcType);
+    });
+
+    /* ── individual slots — no drag events needed (column handles it) ── */
     for (let i=0; i<col.slots; i++) {
       const slot = document.createElement('div');
       slot.className = 'dist-slot';
@@ -1319,13 +1374,25 @@ function buildGrid() {
       if (occ) renderSlotCard(slot, occ);
       else slot.innerHTML = '<span class="dist-hint">+</span>';
 
+      /* slots delegate to column — ensures preventDefault fires on direct target */
       slot.addEventListener('dragover', e => {
+        if (!dragSource) return;
         e.preventDefault();
-        const o = getOccupant(s,i);
-        slot.classList.add(o!==null&&dragSourceType==='slot'&&o!==dragSource?'over-displace':'over');
+        const countInTarget = Object.values(placement).filter(p=>p.score===s).length;
+        const isSameCol = dragSourceType === 'slot' && placement[dragSource]?.score === s;
+        if (isSameCol || countInTarget < col.slots) colDiv.classList.add('col-over');
       });
-      slot.addEventListener('dragleave', ()=>slot.classList.remove('over','over-displace'));
-      slot.addEventListener('drop', e=>{ e.preventDefault(); slot.classList.remove('over','over-displace'); dropOnSlot(s,i); });
+      slot.addEventListener('dragleave', () => {
+        /* intentionally empty — colDiv.dragleave handles removal */
+      });
+      slot.addEventListener('drop', e => {
+        e.preventDefault();
+        colDiv.classList.remove('col-over');
+        const srcId = dragSource; const srcType = dragSourceType;
+        dragSource = null; dragSourceType = null;
+        dropOnColumn(s, srcId, srcType);
+      });
+
       colDiv.appendChild(slot);
     }
     gridEl.appendChild(colDiv);
@@ -1424,7 +1491,9 @@ function setupLeftDrop() {
     if (dragSourceType==='slot'&&dragSource!==null) {
       snapshot();
       const rid=dragSource; delete placement[dragSource];
-      dragSource=null; dragSourceType=null; refreshQSort(rid);
+      dragSource=null; dragSourceType=null;
+      compactColumns();
+      refreshQSort(rid);
     }
   });
 
