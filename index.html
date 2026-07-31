@@ -212,9 +212,27 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 .right-panel::-webkit-scrollbar { width: 4px; }
 .right-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
+.col-filter-row {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  padding: 6px 2px 2px;
+}
+.col-filter-label { font-size: 12px; color: var(--text3); white-space: nowrap; }
+.col-chip {
+  font-size: 12px; padding: 4px 10px; border-radius: 20px;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--text2); cursor: pointer; font-family: inherit;
+  transition: all 0.15s; white-space: nowrap;
+}
+.col-chip:hover { border-color: var(--border2); background: var(--bg2); }
+.col-chip.active-all  { background: var(--bg2);  border-color: var(--border2); color: var(--text);     font-weight: 500; }
+.col-chip.active-neg  { background: #FDF3F0;      border-color: #F0997B;        color: var(--red);      font-weight: 500; }
+.col-chip.active-zero { background: var(--bg2);   border-color: var(--border2); color: var(--text2);    font-weight: 500; }
+.col-chip.active-pos  { background: #F0FAF6;      border-color: #9FE1CB;        color: var(--green-d);  font-weight: 500; }
+
+.dist-endlbl-row { display: flex; justify-content: space-between; align-items: center; padding: 0 4px 2px; }
 .dist-label-row { display: flex; align-items: center; gap: 4px; }
 .end-lbl { font-size: 11px; color: var(--text2); white-space: nowrap; }
-.col-labels { flex: 1; display: flex; }
+.col-labels { display: flex; width: 100%; padding: 0 4px; }
 .col-lbl { flex: 1; text-align: center; font-size: 11px; font-weight: 600; }
 .col-lbl.neg  { color: var(--red); }
 .col-lbl.pos  { color: var(--green); }
@@ -530,6 +548,23 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
     <p class="modal-sub">請根據您對每一張陳述句的同意程度，將所有卡片分配到右側的分佈格中。分佈格為強迫分配，每一欄的格數是固定的。</p>
 
     <div class="modal-section">
+      <h4>💡 建議排列策略</h4>
+      <div class="modal-step">
+        <div class="modal-step-icon neg">1</div>
+        <div class="modal-step-text">先點選右上方篩選列的「<strong>不同意（−5 到 −2）</strong>」，專注排好您最不同意的卡片。</div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon pos">2</div>
+        <div class="modal-step-text">再切換到「<strong>同意（＋2 到 ＋5）</strong>」，排好您最同意的卡片。</div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon zero">3</div>
+        <div class="modal-step-text">最後切換回「<strong>全部</strong>」或「<strong>中性（−2 到 ＋2）</strong>」，完成剩餘的排列。</div>
+      </div>
+    </div>
+
+    <div class="modal-divider"></div>
+    <div class="modal-section">
       <h4>排列規則</h4>
       <div class="modal-step">
         <div class="modal-step-icon info">1</div>
@@ -566,7 +601,11 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
       </div>
       <div class="modal-step">
         <div class="modal-step-icon info">A</div>
-        <div class="modal-step-text"><strong>字體大小</strong>：工具列的 − ＋ 按鈕可調整卡片文字大小（12–24px）。</div>
+        <div class="modal-step-text"><strong>字體大小</strong>：工具列的 − ＋ 按鈕可調整卡片文字大小。</div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon info">↔</div>
+        <div class="modal-step-text"><strong>調整待排區寬度</strong>：左側待排區的右邊緣可以左右拖曳，調整欄位寬度。</div>
       </div>
       <div class="modal-step">
         <div class="modal-step-icon info">←</div>
@@ -781,11 +820,18 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
         <div class="card-list" id="card-list"></div>
       </div>
       <div class="right-panel">
-        <div class="dist-label-row">
-          <span class="end-lbl" style="color:var(--red)">← 不同意</span>
-          <div class="col-labels" id="col-labels"></div>
-          <span class="end-lbl" style="color:var(--green)">同意 →</span>
+        <div class="col-filter-row">
+          <span class="col-filter-label">顯示欄位：</span>
+          <button class="col-chip active-all" data-cf="all"  onclick="setColFilter('all')">全部</button>
+          <button class="col-chip" data-cf="neg"  onclick="setColFilter('neg')">不同意（−5 到 −2）</button>
+          <button class="col-chip" data-cf="zero" onclick="setColFilter('zero')">中性（−2 到 ＋2）</button>
+          <button class="col-chip" data-cf="pos"  onclick="setColFilter('pos')">同意（＋2 到 ＋5）</button>
         </div>
+        <div class="dist-endlbl-row">
+          <span class="end-lbl" data-side="left"  style="color:var(--red)">← 非常不同意</span>
+          <span class="end-lbl" data-side="right" style="color:var(--green)">非常同意 →</span>
+        </div>
+        <div class="col-labels" id="col-labels"></div>
         <div class="dist-grid" id="dist-grid"></div>
       </div>
     </div>
@@ -995,19 +1041,20 @@ let history         = [];
 let dragSource      = null;
 let dragSourceType  = null;
 let searchQuery     = '';
-let pileFilter      = 'all';   // 'all' | 'neg' | 'zero' | 'pos'
+let pileFilter      = 'all';
+let colFilter       = 'all';   // 'all' | 'neg' | 'zero' | 'pos'
 let allResponses    = [];
 
 /* pile-sort state — arrays now (flashcard queue) */
 let piles = { unplaced:[], neg:[], zero:[], pos:[] };
 let fcHistory = [];
 
-/* font-size state: 12–24px, default 16 */
+/* font-size: 4–36px, step 2, default 12 */
 let cardFontSize = 12;
-const FS_MIN = 12, FS_MAX = 24;
+const FS_MIN = 4, FS_MAX = 36;
 
 function changeFontSize(delta) {
-  cardFontSize = Math.min(FS_MAX, Math.max(FS_MIN, cardFontSize + delta));
+  cardFontSize = Math.min(FS_MAX, Math.max(FS_MIN, cardFontSize + delta * 2));
   document.documentElement.style.setProperty('--card-fs', cardFontSize + 'px');
   document.querySelectorAll('.fs-label').forEach(el => el.textContent = cardFontSize + 'px');
 }
@@ -1493,6 +1540,23 @@ function clickReturn(stmtId) {
   refreshQSort(stmtId);
 }
 
+function setColFilter(cf) {
+  colFilter = cf;
+  document.querySelectorAll('.col-chip').forEach(c => {
+    c.className = 'col-chip';
+    if (c.dataset.cf === cf) c.classList.add('active-' + cf);
+  });
+  refreshQSort();
+}
+
+/* Which scores to show given the current column filter */
+function visibleScores() {
+  if (colFilter === 'neg')  return [-5,-4,-3,-2];
+  if (colFilter === 'zero') return [-2, -1, 0, 1, 2];
+  if (colFilter === 'pos')  return [ 2, 3, 4, 5];
+  return COLS.map(c=>c.score);
+}
+
 function buildGrid() {
   const labelsEl = document.getElementById('col-labels');
   const gridEl   = document.getElementById('dist-grid');
@@ -1507,7 +1571,21 @@ function buildGrid() {
      '5': 'rgba(29,158,117,0.14)',
   };
 
-  COLS.forEach(col => {
+  const endLabels = {
+    all:  { left: '← 非常不同意', right: '非常同意 →', leftColor: 'var(--red)',   rightColor: 'var(--green)' },
+    neg:  { left: '← 非常不同意', right: '不同意 →',   leftColor: 'var(--red)',   rightColor: 'var(--red)'   },
+    zero: { left: '← 不同意',     right: '同意 →',     leftColor: 'var(--red)',   rightColor: 'var(--green)' },
+    pos:  { left: '← 同意',       right: '非常同意 →', leftColor: 'var(--green)', rightColor: 'var(--green)' },
+  };
+  const el = endLabels[colFilter] || endLabels.all;
+  const leftEl  = document.querySelector('.end-lbl[data-side="left"]');
+  const rightEl = document.querySelector('.end-lbl[data-side="right"]');
+  leftEl.textContent  = el.left;  leftEl.style.color  = el.leftColor;
+  rightEl.textContent = el.right; rightEl.style.color = el.rightColor;
+
+  const visible = visibleScores();
+
+  COLS.filter(col => visible.includes(col.score)).forEach(col => {
     const s = col.score;
     const lbl = document.createElement('div');
     lbl.className = 'col-lbl'+(s<0?' neg':s>0?' pos':' zero');
