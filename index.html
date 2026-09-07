@@ -724,6 +724,14 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
         </div>
         <div class="field-err">請選擇您的 AI 使用頻率</div>
       </div>
+      <div class="field" id="field-domain">
+        <label>研究領域 *</label>
+        <div class="radio-group">
+          <label><input type="radio" name="research_domain" value="傳播"> 傳播</label>
+          <label><input type="radio" name="research_domain" value="歷史"> 歷史</label>
+        </div>
+        <div class="field-err">請選擇您的研究領域</div>
+      </div>
 
       <div class="btn-row">
         <button class="btn" onclick="goTo('page-intro')">上一步</button>
@@ -936,8 +944,10 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
     </div>
 
     <div class="admin-actions">
-      <button class="abtn primary" onclick="exportCSV()">匯出 CSV（PQMethod 格式）</button>
-      <button class="abtn" onclick="exportJSON()">匯出 JSON（完整資料）</button>
+      <button class="abtn primary" onclick="exportCSV('傳播')">匯出 CSV － 傳播</button>
+      <button class="abtn primary" onclick="exportCSV('歷史')">匯出 CSV － 歷史</button>
+      <button class="abtn" onclick="exportJSON('傳播')">匯出 JSON － 傳播</button>
+      <button class="abtn" onclick="exportJSON('歷史')">匯出 JSON － 歷史</button>
       <button class="abtn" onclick="loadAdmin()">重新整理</button>
       <button class="abtn" onclick="goTo('page-intro')" style="margin-left:auto">← 返回問卷</button>
     </div>
@@ -945,11 +955,11 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
     <table class="resp-table" id="resp-table">
       <thead>
         <tr>
-          <th>受試者 ID</th><th>完成時間</th><th>領域</th><th>職位</th>
+          <th>受試者 ID</th><th>完成時間</th><th>研究領域</th><th>領域</th><th>職位</th>
           <th>AI 使用頻率</th><th>排列時間</th><th>狀態</th><th></th>
         </tr>
       </thead>
-      <tbody id="resp-tbody"><tr><td colspan="8" style="text-align:center;color:var(--text3);padding:24px">載入中…</td></tr></tbody>
+      <tbody id="resp-tbody"><tr><td colspan="9" style="text-align:center;color:var(--text3);padding:24px">載入中…</td></tr></tbody>
     </table>
   </div>
 </div>
@@ -972,72 +982,83 @@ async function sha256Hex(str) {
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-/* ── COLUMNS CONFIG ── */
-const COLS = [
-  {score:-5,slots:2},{score:-4,slots:3},{score:-3,slots:4},
-  {score:-2,slots:6},{score:-1,slots:7},{score:0,slots:10},
-  {score:1,slots:7},{score:2,slots:6},{score:3,slots:4},
-  {score:4,slots:3},{score:5,slots:2},
-];
-const TOTAL = COLS.reduce((s,c)=>s+c.slots,0);
+/* ── STATEMENTS & DISTRIBUTION — loaded live from Google Sheets ──
+   Edit the sentences or the forced-distribution slot counts directly in
+   the Sheets; no code change or redeploy needed. Each scholar domain
+   (傳播 / 歷史) gets its own statement list and its own distribution,
+   since the two sets don't have to be the same size. */
+const SHEET_STATEMENTS_ID   = '1OkL0iA5QIaxKLPAQPjp8Nj0gM_vl0y5eGkdqN-Kn9X8';
+const SHEET_DISTRIBUTION_ID = '1s-JY7J5eOfnux1PqW5ud7aEaDdKjl6dgwJTKBF9N0yw';
+function sheetCsvUrl(id) { return `https://docs.google.com/spreadsheets/d/${id}/export?format=csv`; }
 
-/* ── STATEMENTS (replace with your final Q sample) ── */
-const STATEMENTS = [
-  "AI 工具的引入有助於提升人社研究的效率與產出量",
-  "使用 AI 輔助研究不會影響我作為學者的主體性與獨立判斷",
-  "AI 生成的文獻摘要可以可靠地替代閱讀原始文本",
-  "人社學者應主動學習 AI 工具，以免在學術競爭中落後",
-  "AI 輔助的質性編碼過程需要學者持續的批判性監督",
-  "學術機構對 AI 使用的倫理規範目前仍不夠完善",
-  "AI 無法理解人社研究中的詮釋脈絡與文化細節",
-  "使用 AI 分析質性資料可能會扭曲研究者原本的研究意圖",
-  "AI 工具降低了初學研究者進入學術社群的門檻",
-  "目前主流的 AI 工具在非英語語料上表現明顯不足",
-  "AI 協助文獻回顧的速度讓我能夠聚焦更重要的分析工作",
-  "學術期刊應明確要求作者揭露 AI 工具的使用方式",
-  "人社研究的核心價值在於人類的理解與詮釋，AI 無法取代",
-  "AI 輔助翻譯工具對跨語言的比較研究帶來了實質幫助",
-  "我擔心過度依賴 AI 工具會削弱年輕學者的基礎研究能力",
-  "AI 在辨識大型語料中的模式方面確實有其優勢",
-  "目前 AI 工具的訓練資料存在明顯的文化與地域偏見",
-  "人社學者對 AI 工具的抗拒部分源自對技術的不熟悉",
-  "在田野調查中使用 AI 紀錄工具引發了研究倫理的疑慮",
-  "AI 輔助的資料視覺化工具讓研究成果更容易被公眾理解",
-  "學術社群需要建立跨學科的 AI 使用共識與規範",
-  "AI 工具對人社研究的影響因次領域不同而有顯著差異",
-  "使用 AI 輔助撰寫研究計畫可能影響學術誠信",
-  "AI 讓我得以進行以往因資源限制而無法開展的研究",
-  "人社學者在評估 AI 工具時需要具備基本的技術素養",
-  "AI 工具在量化內容分析方面的應用已相當成熟",
-  "我願意接受系統性的 AI 研究工具培訓課程",
-  "AI 無法處理人社研究中的模糊性、矛盾性與複雜性",
-  "使用 AI 工具應取得研究參與者的知情同意",
-  "AI 輔助的系統性文獻回顧比傳統方式更具再現性",
-  "學術機構應提供 AI 工具的使用指引與技術支援",
-  "AI 工具的商業性質與學術獨立性之間存在潛在衝突",
-  "人社研究者使用 AI 工具的能力差距正在拉大學術不平等",
-  "AI 輔助轉錄與逐字稿處理大幅節省了我的研究時間",
-  "目前市面上的 AI 研究工具仍不夠穩定，難以應用於正式研究",
-  "人社學者應參與 AI 工具的開發與設計過程",
-  "AI 生成的文字難以被引用，因為其出處難以追溯",
-  "在研究報告中透明揭露 AI 使用情形是學術誠信的要求",
-  "AI 工具讓人社研究在跨機構合作方面更加便利",
-  "我擔心 AI 工具的廣泛使用會使人社研究失去其獨特性",
-  "AI 在處理檔案史料與歷史文獻方面具有顯著潛力",
-  "人社研究中 AI 工具的使用應經過倫理委員會審查",
-  "AI 輔助工具使我能夠同時管理更龐大的研究資料集",
-  "目前的 AI 技術尚未達到能夠真正理解人社理論的程度",
-  "學術出版社應建立 AI 生成內容的辨識與標記機制",
-  "AI 輔助的訪談分析工具有助於提升質性研究的信效度",
-  "人社學者使用 AI 工具的決定應基於研究問題的性質",
-  "AI 降低了研究成果開放取用的技術障礙",
-  "我相信 AI 工具最終會根本改變人社研究的方法論",
-  "人社學者需要與 AI 開發者建立更緊密的對話機制",
-  "AI 輔助的比較研究讓不同文化脈絡的分析更加系統化",
-  "目前的 AI 工具無法有效處理人社研究中的倫理敏感議題",
-  "AI 工具應被視為方法論工具箱中的一員，而非取代者",
-  "人社學者對 AI 的態度反映了更廣泛的科技與人文之間的張力",
-].map((text,i)=>({id:i+1,text}));
+function parseCSV(text) {
+  const rows = [];
+  let row = [], field = '', inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQuotes) {
+      if (c === '"') { if (text[i+1] === '"') { field += '"'; i++; } else inQuotes = false; }
+      else field += c;
+    } else if (c === '"') inQuotes = true;
+    else if (c === ',') { row.push(field); field = ''; }
+    else if (c === '\n' || c === '\r') {
+      if (c === '\r' && text[i+1] === '\n') i++;
+      row.push(field); field = '';
+      if (row.length > 1 || row[0] !== '') rows.push(row);
+      row = [];
+    } else field += c;
+  }
+  if (field !== '' || row.length) { row.push(field); rows.push(row); }
+  return rows;
+}
+
+let STATEMENTS_BY_DOMAIN = {};
+let COLS_BY_DOMAIN       = {};
+let sheetsReady          = false;
+let sheetsLoadError      = false;
+
+let STATEMENTS = [];
+let COLS       = [];
+let TOTAL      = 0;
+
+function selectDomain(domain) {
+  STATEMENTS = (STATEMENTS_BY_DOMAIN[domain] || []).slice();
+  COLS       = (COLS_BY_DOMAIN[domain] || []).slice();
+  TOTAL      = COLS.reduce((s,c)=>s+c.slots, 0);
+}
+
+async function loadSheets() {
+  try {
+    const [stmtRes, distRes] = await Promise.all([
+      fetch(sheetCsvUrl(SHEET_STATEMENTS_ID)),
+      fetch(sheetCsvUrl(SHEET_DISTRIBUTION_ID)),
+    ]);
+    if (!stmtRes.ok || !distRes.ok) throw new Error('sheet fetch failed: ' + stmtRes.status + '/' + distRes.status);
+    const [stmtText, distText] = await Promise.all([stmtRes.text(), distRes.text()]);
+
+    STATEMENTS_BY_DOMAIN = {};
+    parseCSV(stmtText).slice(1).forEach(([domain, id, text]) => {
+      if (!domain) return;
+      if (!STATEMENTS_BY_DOMAIN[domain]) STATEMENTS_BY_DOMAIN[domain] = [];
+      STATEMENTS_BY_DOMAIN[domain].push({ id: Number(id), text });
+    });
+
+    COLS_BY_DOMAIN = {};
+    parseCSV(distText).slice(1).forEach(([domain, score, slots]) => {
+      if (!domain) return;
+      if (!COLS_BY_DOMAIN[domain]) COLS_BY_DOMAIN[domain] = [];
+      COLS_BY_DOMAIN[domain].push({ score: Number(score), slots: Number(slots) });
+    });
+
+    sheetsReady = true;
+    const firstDomain = Object.keys(STATEMENTS_BY_DOMAIN)[0];
+    if (firstDomain) selectDomain(firstDomain);
+  } catch (e) {
+    console.error('讀取題目資料失敗', e);
+    sheetsLoadError = true;
+  }
+}
+loadSheets();
 
 /* ══════════════════════════════════════
    STATE
@@ -1058,8 +1079,8 @@ let allResponses    = [];
 let piles = { unplaced:[], neg:[], zero:[], pos:[] };
 let fcHistory = [];
 
-/* font-size: 4–36px, step 2, default 12 */
-let cardFontSize = 12;
+/* font-size: 4–36px, step 2, default 14 */
+let cardFontSize = 14;
 const FS_MIN = 4, FS_MAX = 36;
 
 function changeFontSize(delta) {
@@ -1147,6 +1168,7 @@ function validateProfile() {
     { id:'field-pos',ok: !!document.querySelector('input[name=position]:checked') },
     { id:'field-yr', ok: !!document.getElementById('p-years').value },
     { id:'field-ai', ok: !!document.querySelector('input[name=aiuse]:checked') },
+    { id:'field-domain', ok: !!document.querySelector('input[name=research_domain]:checked') },
   ];
   let valid = true;
   checks.forEach(c => {
@@ -1164,13 +1186,22 @@ function validateProfile() {
 async function startQSort() {
   if (!validateProfile()) return;
 
+  if (!sheetsReady) {
+    if (sheetsLoadError) { alert('題目資料讀取失敗，請重新整理頁面再試一次。'); return; }
+    alert('題目資料載入中，請稍候幾秒再試一次。');
+    return;
+  }
+
+  const profile = collectProfile();
+  selectDomain(profile.research_domain);
+  if (!STATEMENTS.length) { alert('目前所選研究領域尚無陳述句，請聯繫研究人員。'); return; }
+
   participantId = genId();
   startedAt = Date.now();
 
   piles = { unplaced:[...STATEMENTS.map(s=>s.id)], neg:[], zero:[], pos:[] };
   fcHistory = [];
 
-  const profile = collectProfile();
   try {
     await saveToFirebase({ background: profile, status: 'started' });
   } catch(e) { console.warn('Firebase save failed', e); }
@@ -1289,6 +1320,7 @@ function collectProfile() {
     position: document.querySelector('input[name=position]:checked')?.value || '',
     years:    document.getElementById('p-years').value,
     ai_use:   document.querySelector('input[name=aiuse]:checked')?.value || '',
+    research_domain: document.querySelector('input[name=research_domain]:checked')?.value || '',
   };
 }
 
@@ -1381,7 +1413,7 @@ async function loadAdmin() {
 
   const tbody = document.getElementById('resp-tbody');
   if (!allResponses.length) {
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:24px">尚無資料</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text3);padding:24px">尚無資料</td></tr>';
     return;
   }
 
@@ -1392,6 +1424,7 @@ async function loadAdmin() {
     return `<tr id="row-${r.id}">
       <td>${r.participant_id || r.id.slice(0,8)}</td>
       <td>${dt}</td>
+      <td>${bg.research_domain||'–'}</td>
       <td>${bg.field||'–'}</td>
       <td>${bg.position||'–'}</td>
       <td>${bg.ai_use||'–'}</td>
@@ -1427,11 +1460,12 @@ async function deleteResponse(docId) {
   }
 }
 
-function exportCSV() {
-  const complete = allResponses.filter(r => r.status==='complete' && r.qsort);
-  if (!complete.length) { alert('尚無已完成的資料'); return; }
+function exportCSV(domain) {
+  if (!sheetsReady) { alert('題目資料尚未載入完成，請稍候再試一次。'); return; }
+  const complete = allResponses.filter(r => r.status==='complete' && r.qsort && r.background?.research_domain === domain);
+  if (!complete.length) { alert(`尚無「${domain}」已完成的資料`); return; }
 
-  const ids = STATEMENTS.map(s=>s.id);
+  const ids = (STATEMENTS_BY_DOMAIN[domain] || []).map(s=>s.id);
   const header = ['participant_id', 'field', 'position', 'years', 'ai_use', ...ids.map(i=>'s'+i)];
   const rows = complete.map(r => {
     const bg = r.background || {};
@@ -1440,11 +1474,13 @@ function exportCSV() {
   });
 
   const csv = [header, ...rows].map(r=>r.map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
-  download('qsort_data.csv', '\uFEFF' + csv, 'text/csv;charset=utf-8');
+  download(`qsort_data_${domain}.csv`, '\uFEFF' + csv, 'text/csv;charset=utf-8');
 }
 
-function exportJSON() {
-  download('qsort_data.json', JSON.stringify(allResponses, null, 2), 'application/json');
+function exportJSON(domain) {
+  const filtered = allResponses.filter(r => r.background?.research_domain === domain);
+  if (!filtered.length) { alert(`\u5C1A\u7121\u300C${domain}\u300D\u7684\u8CC7\u6599`); return; }
+  download(`qsort_data_${domain}.json`, JSON.stringify(filtered, null, 2), 'application/json');
 }
 
 function download(filename, content, type) {
