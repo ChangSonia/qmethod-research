@@ -681,18 +681,6 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
       <h2>基本資料</h2>
       <p class="sub">以下資料僅供研究分析使用，不會揭露您的個人身分。標示 * 為必填。</p>
 
-      <div class="field" id="field-f">
-        <label>所屬學術領域 *</label>
-        <select id="p-field">
-          <option value="">請選擇</option>
-          <option>社會學</option><option>人類學</option><option>歷史學</option>
-          <option>政治學</option><option>心理學</option><option>傳播與媒體研究</option>
-          <option>教育學</option><option>語言學</option><option>文學與文化研究</option>
-          <option>哲學</option><option>地理學</option><option>經濟學</option>
-          <option>其他人文社會科學領域</option>
-        </select>
-        <div class="field-err">請選擇您的學術領域</div>
-      </div>
       <div class="field" id="field-pos">
         <label>目前職位 *</label>
         <div class="radio-group">
@@ -955,11 +943,11 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
     <table class="resp-table" id="resp-table">
       <thead>
         <tr>
-          <th>受試者 ID</th><th>完成時間</th><th>研究領域</th><th>領域</th><th>職位</th>
+          <th>受試者 ID</th><th>完成時間</th><th>研究領域</th><th>職位</th>
           <th>AI 使用頻率</th><th>排列時間</th><th>狀態</th><th></th>
         </tr>
       </thead>
-      <tbody id="resp-tbody"><tr><td colspan="9" style="text-align:center;color:var(--text3);padding:24px">載入中…</td></tr></tbody>
+      <tbody id="resp-tbody"><tr><td colspan="8" style="text-align:center;color:var(--text3);padding:24px">載入中…</td></tr></tbody>
     </table>
   </div>
 </div>
@@ -1164,7 +1152,6 @@ function badge(el, state, msg) {
 ══════════════════════════════════════ */
 function validateProfile() {
   const checks = [
-    { id:'field-f',  ok: !!document.getElementById('p-field').value },
     { id:'field-pos',ok: !!document.querySelector('input[name=position]:checked') },
     { id:'field-yr', ok: !!document.getElementById('p-years').value },
     { id:'field-ai', ok: !!document.querySelector('input[name=aiuse]:checked') },
@@ -1316,7 +1303,6 @@ document.addEventListener('keydown', fcKeyHandler);
 
 function collectProfile() {
   return {
-    field:    document.getElementById('p-field').value,
     position: document.querySelector('input[name=position]:checked')?.value || '',
     years:    document.getElementById('p-years').value,
     ai_use:   document.querySelector('input[name=aiuse]:checked')?.value || '',
@@ -1413,7 +1399,7 @@ async function loadAdmin() {
 
   const tbody = document.getElementById('resp-tbody');
   if (!allResponses.length) {
-    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text3);padding:24px">尚無資料</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:24px">尚無資料</td></tr>';
     return;
   }
 
@@ -1425,7 +1411,6 @@ async function loadAdmin() {
       <td>${r.participant_id || r.id.slice(0,8)}</td>
       <td>${dt}</td>
       <td>${bg.research_domain||'–'}</td>
-      <td>${bg.field||'–'}</td>
       <td>${bg.position||'–'}</td>
       <td>${bg.ai_use||'–'}</td>
       <td>${r.duration_minutes ? r.duration_minutes+'分' : '–'}</td>
@@ -1466,11 +1451,11 @@ function exportCSV(domain) {
   if (!complete.length) { alert(`尚無「${domain}」已完成的資料`); return; }
 
   const ids = (STATEMENTS_BY_DOMAIN[domain] || []).map(s=>s.id);
-  const header = ['participant_id', 'field', 'position', 'years', 'ai_use', ...ids.map(i=>'s'+i)];
+  const header = ['participant_id', 'position', 'years', 'ai_use', ...ids.map(i=>'s'+i)];
   const rows = complete.map(r => {
     const bg = r.background || {};
     const scores = ids.map(i => r.qsort?.[String(i)] ?? '');
-    return [r.participant_id, bg.field, bg.position, bg.years, bg.ai_use, ...scores];
+    return [r.participant_id, bg.position, bg.years, bg.ai_use, ...scores];
   });
 
   const csv = [header, ...rows].map(r=>r.map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
