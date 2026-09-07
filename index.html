@@ -960,8 +960,17 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
      MAIN SCRIPT
 ══════════════════════════════════════ -->
 <script>
-/* ── ADMIN PASSWORD (change this before deploying) ── */
-const ADMIN_PASSWORD = '0000';
+/* ── ADMIN PASSWORD ──
+   Stored as a SHA-256 hash so the raw password doesn't sit in plain text
+   in the page source. To change it: hash the new password (e.g. in a
+   browser console: crypto.subtle.digest('SHA-256', new TextEncoder().encode('newpw'))
+   → hex) and replace the value below. */
+const ADMIN_PASSWORD_HASH = '9af15b336e6a9619928537df30b2e6a2376569fcf9d7e773eccede65606529a0';
+
+async function sha256Hex(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
 
 /* ── COLUMNS CONFIG ── */
 const COLS = [
@@ -1341,9 +1350,10 @@ async function saveEmail() {
 /* ══════════════════════════════════════
    ADMIN
 ══════════════════════════════════════ */
-function adminLogin() {
+async function adminLogin() {
   const pw = document.getElementById('admin-pw').value;
-  if (pw === ADMIN_PASSWORD) {
+  const hash = await sha256Hex(pw);
+  if (hash === ADMIN_PASSWORD_HASH) {
     document.getElementById('login-err').textContent = '';
     goTo('page-admin');
   } else {
