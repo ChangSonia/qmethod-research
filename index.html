@@ -625,6 +625,7 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
   <button onclick="document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-profile').classList.add('active')"   style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #444;background:transparent;color:#ccc;cursor:pointer;">基本資料</button>
   <button onclick="document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-presort').classList.add('active');if(!piles.unplaced.length){piles={unplaced:[...STATEMENTS.map(s=>s.id)],neg:[],zero:[],pos:[]};fcHistory=[];}buildPresort();" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #444;background:transparent;color:#ccc;cursor:pointer;">初步分類</button>
   <button onclick="document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-qsort').classList.add('active');if(!piles.pos.length&&!piles.neg.length){piles={unplaced:[],neg:STATEMENTS.slice(0,18).map(s=>s.id),zero:STATEMENTS.slice(18,36).map(s=>s.id),pos:STATEMENTS.slice(36).map(s=>s.id)};}refreshQSort();" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #444;background:transparent;color:#ccc;cursor:pointer;">Q Sort</button>
+  <button onclick="devAutoFillQSort()" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #444;background:transparent;color:#ccc;cursor:pointer;">自動填滿 Q Sort</button>
   <button onclick="document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-done').classList.add('active')"      style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #444;background:transparent;color:#ccc;cursor:pointer;">完成頁</button>
   <button onclick="document.getElementById('dev-nav').style.display='none'" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #666;background:transparent;color:#888;cursor:pointer;margin-left:auto;">隱藏</button>
 </div>
@@ -1760,6 +1761,21 @@ function updateStats() {
 }
 
 function refreshQSort(highlightId) { buildGrid(); buildCards(highlightId); updateStats(); }
+
+/* 🛠 測試用：把所有陳述句依序自動塞進分佈格，跳過手動拖曳 */
+function devAutoFillQSort() {
+  if (!STATEMENTS.length) { alert('題目資料尚未載入完成，請稍候再試一次。'); return; }
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-qsort').classList.add('active');
+  snapshot();
+  placement = {};
+  const ids = STATEMENTS.map(s=>s.id);
+  let idx = 0;
+  COLS.forEach(col => {
+    for (let i=0; i<col.slots; i++) { placement[ids[idx]] = { score: col.score, idx: i }; idx++; }
+  });
+  refreshQSort();
+}
 
 function setupLeftDrop() {
   const panel = document.getElementById('left-panel');
