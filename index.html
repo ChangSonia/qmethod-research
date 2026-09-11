@@ -111,11 +111,12 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 /* ══════════════════════════════════════════
    DONE PAGE
 ══════════════════════════════════════════ */
-.done-wrap { flex: 1; display: flex; align-items: center; justify-content: center; }
-.done-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--r-lg); padding: 52px 48px; text-align: center; max-width: 480px; width: 100%; }
-.done-icon  { font-size: 44px; margin-bottom: 16px; }
-.done-title { font-size: 22px; font-weight: 600; margin-bottom: 12px; }
-.done-msg   { font-size: 13px; color: var(--text2); line-height: 1.75; }
+.success-badge {
+  width: 52px; height: 52px; border-radius: 50%; background: var(--green);
+  color: #fff; font-size: 26px; font-weight: 700; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+}
 
 /* ══════════════════════════════════════════
    QSORT PAGE
@@ -858,19 +859,18 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
      PAGE 4 — DONE
 ══════════════════════════════════════ -->
 <div class="page" id="page-done">
-  <div class="done-wrap">
-    <div class="done-card">
-      <div class="done-icon">✓</div>
-      <div class="done-title">感謝您的參與！</div>
-      <p class="done-msg">
-        感謝您撥冗完成排序，您的回答對本研究有非常重要的貢獻。
-      </p>
-      <div class="field" style="margin-top:24px; text-align:left">
+  <div class="form-shell">
+    <div class="form-card">
+      <div class="success-badge">✓</div>
+      <h2 style="text-align:center">感謝您的參與！</h2>
+      <p class="sub" style="text-align:center">感謝您撥冗完成排序，您的回答對本研究有非常重要的貢獻。</p>
+
+      <div class="field" style="margin-top:24px">
         <label>電子郵件（選填）</label>
         <p class="sub" style="margin-bottom:8px">若您願意參與後續研究，請輸入您的電子郵件。此欄位將獨立儲存於另一份檔案，與您的排序結果分開保存，研究團隊無法將兩者連結。</p>
         <input type="email" id="done-email" placeholder="your@email.com">
       </div>
-      <div class="field" style="margin-top:20px; text-align:left">
+      <div class="field" style="margin-top:20px">
         <label>意見或留言（選填）</label>
         <p class="sub" style="margin-bottom:8px">若您對本研究或陳述內容有任何意見或疑問，歡迎於下方留言。</p>
         <textarea id="post-comment" placeholder="請輸入您的想法…" rows="4"></textarea>
