@@ -73,11 +73,6 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 .form-card .sub { font-size: 13px; color: var(--text2); line-height: 1.75; margin-bottom: 28px; }
 .form-card .sub p { margin-bottom: 8px; }
 
-.step-bar { display: flex; gap: 6px; margin-bottom: 24px; }
-.step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border2); transition: all 0.2s; }
-.step-dot.done   { background: var(--green); }
-.step-dot.active { background: var(--green); width: 22px; border-radius: 4px; }
-
 .field { margin-bottom: 20px; }
 .field label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
 .field input, .field select, .field textarea {
@@ -639,10 +634,6 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 <div class="page active" id="page-intro">
   <div class="form-shell">
     <div class="form-card">
-      <div class="step-bar">
-        <div class="step-dot active"></div><div class="step-dot"></div>
-        <div class="step-dot"></div><div class="step-dot"></div>
-      </div>
       <h2>研究說明與知情同意</h2>
       <div class="consent-box">
         <p>專家學者，您好：</p><br>
@@ -673,10 +664,6 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 <div class="page" id="page-profile">
   <div class="form-shell">
     <div class="form-card">
-      <div class="step-bar">
-        <div class="step-dot done"></div><div class="step-dot active"></div>
-        <div class="step-dot"></div><div class="step-dot"></div>
-      </div>
       <h2>基本資料</h2>
       <p class="sub">以下資料僅供研究分析使用，不會揭露您的個人身分。標示 * 為必填。</p>
 
