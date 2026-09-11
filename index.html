@@ -629,7 +629,6 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
   <button onclick="document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-profile').classList.add('active')"   style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #444;background:transparent;color:#ccc;cursor:pointer;">基本資料</button>
   <button onclick="document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-presort').classList.add('active');if(!piles.unplaced.length){piles={unplaced:[...STATEMENTS.map(s=>s.id)],neg:[],zero:[],pos:[]};fcHistory=[];}buildPresort();" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #444;background:transparent;color:#ccc;cursor:pointer;">初步分類</button>
   <button onclick="document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-qsort').classList.add('active');if(!piles.pos.length&&!piles.neg.length){piles={unplaced:[],neg:STATEMENTS.slice(0,18).map(s=>s.id),zero:STATEMENTS.slice(18,36).map(s=>s.id),pos:STATEMENTS.slice(36).map(s=>s.id)};}refreshQSort();" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #444;background:transparent;color:#ccc;cursor:pointer;">Q Sort</button>
-  <button onclick="document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-post').classList.add('active')"      style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #444;background:transparent;color:#ccc;cursor:pointer;">後排序問題</button>
   <button onclick="document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-done').classList.add('active')"      style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #444;background:transparent;color:#ccc;cursor:pointer;">完成頁</button>
   <button onclick="document.getElementById('dev-nav').style.display='none'" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #666;background:transparent;color:#888;cursor:pointer;margin-left:auto;">隱藏</button>
 </div>
@@ -642,7 +641,7 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
     <div class="form-card">
       <div class="step-bar">
         <div class="step-dot active"></div><div class="step-dot"></div>
-        <div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div>
+        <div class="step-dot"></div><div class="step-dot"></div>
       </div>
       <h2>研究說明與知情同意</h2>
       <div class="consent-box">
@@ -676,7 +675,7 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
     <div class="form-card">
       <div class="step-bar">
         <div class="step-dot done"></div><div class="step-dot active"></div>
-        <div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div>
+        <div class="step-dot"></div><div class="step-dot"></div>
       </div>
       <h2>基本資料</h2>
       <p class="sub">以下資料僅供研究分析使用，不會揭露您的個人身分。標示 * 為必填。</p>
@@ -869,34 +868,7 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 </div>
 
 <!-- ══════════════════════════════════════
-     PAGE 4 — POST-SORT
-══════════════════════════════════════ -->
-<div class="page" id="page-post">
-  <div class="form-shell">
-    <div class="form-card" style="max-width:620px">
-      <div class="step-bar">
-        <div class="step-dot done"></div><div class="step-dot done"></div>
-        <div class="step-dot done"></div><div class="step-dot done"></div><div class="step-dot active"></div>
-      </div>
-      <h2>感謝您的參與</h2>
-      <p class="sub">感謝您撥冗完成排序！若您對本研究或陳述內容有任何意見或疑問，歡迎於下方留言。<br><br>此外，若您願意參與後續研究，請於表單送出後完成頁面另行留下 email。該表單與本研究資料分開蒐集，研究團隊無法將您的 email 與排序結果連結。</p>
-
-      <div class="field">
-        <label>意見或留言（選填）</label>
-        <textarea id="post-comment" placeholder="請輸入您的想法…" rows="4"></textarea>
-      </div>
-
-      <div class="save-badge" id="post-save-badge"></div>
-      <div class="btn-row">
-        <button class="btn" onclick="goTo('page-qsort')">返回修改排列</button>
-        <button class="btn primary" onclick="submitAll()">送出完成</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════
-     PAGE 5 — DONE
+     PAGE 4 — DONE
 ══════════════════════════════════════ -->
 <div class="page" id="page-done">
   <div class="done-wrap">
@@ -904,15 +876,20 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
       <div class="done-icon">✓</div>
       <div class="done-title">感謝您的參與！</div>
       <p class="done-msg">
-        您的回答已成功送出，對本研究有非常重要的貢獻。<br><br>
-        若您願意參與後續研究，請輸入您的電子郵件。此欄位將獨立儲存於另一份檔案，與您的排序結果分開保存，研究團隊無法將兩者連結。
+        感謝您撥冗完成排序，您的回答對本研究有非常重要的貢獻。
       </p>
       <div class="field" style="margin-top:24px; text-align:left">
         <label>電子郵件（選填）</label>
+        <p class="sub" style="margin-bottom:8px">若您願意參與後續研究，請輸入您的電子郵件。此欄位將獨立儲存於另一份檔案，與您的排序結果分開保存，研究團隊無法將兩者連結。</p>
         <input type="email" id="done-email" placeholder="your@email.com">
       </div>
-      <div class="btn-row" style="justify-content:center; margin-top:4px">
-        <button class="btn primary" onclick="saveEmail()">確認送出</button>
+      <div class="field" style="margin-top:20px; text-align:left">
+        <label>意見或留言（選填）</label>
+        <p class="sub" style="margin-bottom:8px">若您對本研究或陳述內容有任何意見或疑問，歡迎於下方留言。</p>
+        <textarea id="post-comment" placeholder="請輸入您的想法…" rows="4"></textarea>
+      </div>
+      <div class="btn-row" style="justify-content:center; margin-top:16px">
+        <button class="btn primary" id="btn-finish" onclick="finishStudy()">送出完成</button>
       </div>
       <div class="save-badge" id="done-badge" style="text-align:center;margin-top:8px"></div>
     </div>
@@ -1357,16 +1334,19 @@ async function submitQsort() {
   try {
     await saveToFirebase({ qsort: qsortData, status: 'qsort_done' });
   } catch(e) { console.warn('Firebase save failed', e); }
-  goTo('page-post');
+  goTo('page-done');
 }
 
-async function submitAll() {
+async function finishStudy() {
+  const btn = document.getElementById('btn-finish');
   const comment = document.getElementById('post-comment').value.trim();
+  const email   = document.getElementById('done-email').value.trim();
   const qsortData = {};
   STATEMENTS.forEach(s => { qsortData[String(s.id)] = placement[s.id]?.score ?? null; });
   const duration = Math.round((Date.now() - startedAt) / 60000);
 
-  badge('post-save-badge', 'saving', '正在儲存…');
+  btn.disabled = true;
+  badge('done-badge', 'saving', '正在儲存…');
   try {
     await saveToFirebase({
       qsort: qsortData,
@@ -1375,30 +1355,20 @@ async function submitAll() {
       duration_minutes: duration,
       status: 'complete'
     });
-    badge('post-save-badge', 'saved', '✓ 已成功儲存');
-    setTimeout(()=>goTo('page-done'), 600);
+    if (email) {
+      // 存進獨立的 collection，不含 participant_id／docRef，
+      // 確保無法與排序結果連結（去識別化）
+      const { collection, addDoc, serverTimestamp } = window._fns;
+      await addDoc(collection(window._db, 'followup_contacts'), {
+        email,
+        submitted_at: serverTimestamp(),
+      });
+    }
+    badge('done-badge', 'saved', '✓ 已成功送出，感謝您的參與！');
   } catch(e) {
-    badge('post-save-badge', '', '⚠ 儲存失敗，請重試');
+    badge('done-badge', '', '⚠ 儲存失敗，請重試');
+    btn.disabled = false;
     console.error(e);
-  }
-}
-
-async function saveEmail() {
-  const email = document.getElementById('done-email').value.trim();
-  if (!email) return;
-  badge('done-badge', 'saving', '儲存中…');
-  try {
-    // 存進獨立的 collection，不含 participant_id／docRef，
-    // 確保無法與排序結果連結（去識別化）
-    await waitForFirebase();
-    const { collection, addDoc, serverTimestamp } = window._fns;
-    await addDoc(collection(window._db, 'followup_contacts'), {
-      email,
-      submitted_at: serverTimestamp(),
-    });
-    badge('done-badge', 'saved', '✓ 已記錄，感謝您！');
-  } catch(e) {
-    badge('done-badge', '', '⚠ 儲存失敗');
   }
 }
 
