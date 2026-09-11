@@ -648,7 +648,7 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
       <div class="consent-box">
         <p>專家學者，您好：</p><br>
         <p>這是由國科會補助的學術研究計畫，研究目的是想了解您對於AI介入研究工作的觀點與態度。我們期待這項研究將有助於彰顯人社領域對於AI介入研究的不同觀點，協助探索社群共識，也期盼有助於發展符合各學門實踐的參考準則。</p><br>
-        <p>研究內容包含基本資料、陳述排序、排序理由說明等共三個部分。您將閱讀一組關於AI與學術研究的陳述，依您的同意程度進行排序，並簡要說明排序理由。陳述沒有正確或錯誤答案。填答時間約20分鐘。本研究完全不記名，亦不紀錄您的email帳號與IP位置，因此研究者無從得知是誰填寫。研究結果採群體分析。所蒐集資訊保存5年後銷毀。</p><br>
+        <p>研究內容包含基本資料、陳述排序等兩個部分。您將閱讀一組關於AI與學術研究的陳述，依您的同意程度進行排序。陳述沒有正確或錯誤答案。填答時間約20分鐘。本研究完全不記名，亦不紀錄您的email帳號與IP位置，因此研究者無從得知是誰填寫。研究結果採群體分析。所蒐集資訊保存5年後銷毀。</p><br>
         <p>您可自由決定是否填寫，亦可中途不填，無需感到壓力。惟本研究不記名，因此您填寫完送出就無法提供刪除紀錄的退出選項。未來您如有興趣了解研究結果，本結果將在2029年4月1日於國科會網站公開研究成果報告書，相關分析亦將在之前陸續發表，歡迎參考。</p><br>
         ※1. 本研究內容業經相關專家協助檢視，並通過清大研究倫理審查委員會審查（REC編號：11411HS232）。<br><br>
         2. 閱讀完後如繼續填寫，將視為您同意參與研究，並請您自行截圖或儲存本知情說明頁。<br><br>
@@ -878,24 +878,12 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
         <div class="step-dot done"></div><div class="step-dot done"></div>
         <div class="step-dot done"></div><div class="step-dot done"></div><div class="step-dot active"></div>
       </div>
-      <h2>後排序問題</h2>
-      <p class="sub">您已完成 Q 排序，感謝您的耐心。以下幾個問題想進一步了解您的排列思考，請以 2–4 句話簡短回答即可。</p>
+      <h2>感謝您的參與</h2>
+      <p class="sub">感謝您撥冗完成排序！若您對本研究或陳述內容有任何意見或疑問，歡迎於下方留言。<br><br>此外，若您願意參與後續研究，請於表單送出後完成頁面另行留下 email。該表單與本研究資料分開蒐集，研究團隊無法將您的 email 與排序結果連結。</p>
 
       <div class="field">
-        <label>1. 您將哪些陳述句放在最同意（+4 或 +5）的位置？請說明原因。</label>
-        <textarea id="post-q1" placeholder="請輸入您的想法…" rows="3"></textarea>
-      </div>
-      <div class="field">
-        <label>2. 您將哪些陳述句放在最不同意（-4 或 -5）的位置？請說明原因。</label>
-        <textarea id="post-q2" placeholder="請輸入您的想法…" rows="3"></textarea>
-      </div>
-      <div class="field">
-        <label>3. 在排列過程中，哪些陳述句讓您感到最難決定？為什麼？</label>
-        <textarea id="post-q3" placeholder="請輸入您的想法…" rows="3"></textarea>
-      </div>
-      <div class="field">
-        <label>4. 您認為本研究的陳述句是否有遺漏任何重要的觀點？（可選填）</label>
-        <textarea id="post-q4" placeholder="如有補充，請在此說明…" rows="3"></textarea>
+        <label>意見或留言（選填）</label>
+        <textarea id="post-comment" placeholder="請輸入您的想法…" rows="4"></textarea>
       </div>
 
       <div class="save-badge" id="post-save-badge"></div>
@@ -917,7 +905,7 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
       <div class="done-title">感謝您的參與！</div>
       <p class="done-msg">
         您的回答已成功送出，對本研究有非常重要的貢獻。<br><br>
-        若您對研究結果感興趣，歡迎留下您的電子郵件，<br>我們將在研究完成後寄送摘要給您。
+        若您願意參與後續研究，請輸入您的電子郵件。此欄位將獨立儲存於另一份檔案，與您的排序結果分開保存，研究團隊無法將兩者連結。
       </p>
       <div class="field" style="margin-top:24px; text-align:left">
         <label>電子郵件（選填）</label>
@@ -1373,12 +1361,7 @@ async function submitQsort() {
 }
 
 async function submitAll() {
-  const postData = {
-    q1: document.getElementById('post-q1').value,
-    q2: document.getElementById('post-q2').value,
-    q3: document.getElementById('post-q3').value,
-    q4: document.getElementById('post-q4').value,
-  };
+  const comment = document.getElementById('post-comment').value.trim();
   const qsortData = {};
   STATEMENTS.forEach(s => { qsortData[String(s.id)] = placement[s.id]?.score ?? null; });
   const duration = Math.round((Date.now() - startedAt) / 60000);
@@ -1387,7 +1370,7 @@ async function submitAll() {
   try {
     await saveToFirebase({
       qsort: qsortData,
-      post_sort: postData,
+      comment,
       completed_at: new Date().toISOString(),
       duration_minutes: duration,
       status: 'complete'
@@ -1405,7 +1388,14 @@ async function saveEmail() {
   if (!email) return;
   badge('done-badge', 'saving', '儲存中…');
   try {
-    await saveToFirebase({ contact_email: email });
+    // 存進獨立的 collection，不含 participant_id／docRef，
+    // 確保無法與排序結果連結（去識別化）
+    await waitForFirebase();
+    const { collection, addDoc, serverTimestamp } = window._fns;
+    await addDoc(collection(window._db, 'followup_contacts'), {
+      email,
+      submitted_at: serverTimestamp(),
+    });
     badge('done-badge', 'saved', '✓ 已記錄，感謝您！');
   } catch(e) {
     badge('done-badge', '', '⚠ 儲存失敗');
