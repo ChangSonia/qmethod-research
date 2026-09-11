@@ -90,7 +90,8 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 .field textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
 .radio-group { display: flex; flex-direction: column; gap: 8px; }
 .radio-group label { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 400; cursor: pointer; }
-.radio-group input[type=radio] { width: auto; accent-color: var(--green); }
+.radio-group input[type=radio], .radio-group input[type=checkbox] { width: auto; accent-color: var(--green); }
+.radio-group .other-input { margin-top: 4px; margin-left: 24px; max-width: 260px; }
 .checkbox-row { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; cursor: pointer; margin-bottom: 24px; }
 .checkbox-row input { width: auto; margin-top: 2px; accent-color: var(--green); }
 
@@ -680,44 +681,78 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
       <h2>基本資料</h2>
       <p class="sub">以下資料僅供研究分析使用，不會揭露您的個人身分。標示 * 為必填。</p>
 
-      <div class="field" id="field-pos">
-        <label>目前職位 *</label>
+      <div class="field" id="field-school">
+        <label>Q1-1. 請問您所屬學校？ *</label>
         <div class="radio-group">
-          <label><input type="radio" name="position" value="教授／副教授／助理教授"> 教授／副教授／助理教授</label>
-          <label><input type="radio" name="position" value="博士後研究員"> 博士後研究員</label>
-          <label><input type="radio" name="position" value="博士生"> 博士生</label>
-          <label><input type="radio" name="position" value="碩士生"> 碩士生</label>
-          <label><input type="radio" name="position" value="其他"> 其他</label>
+          <label><input type="radio" name="school" value="國立大學"> 國立大學</label>
+          <label><input type="radio" name="school" value="私立大學"> 私立大學</label>
+          <label><input type="radio" name="school" value="國立科技大學"> 國立科技大學</label>
+          <label><input type="radio" name="school" value="私立科技大學"> 私立科技大學</label>
+          <label><input type="radio" name="school" value="研究機構"> 研究機構（如中央研究院、國史館、國科會）</label>
         </div>
-        <div class="field-err">請選擇您的職位</div>
+        <div class="field-err">請選擇您所屬學校</div>
       </div>
-      <div class="field" id="field-yr">
-        <label>學術年資（取得最高學位後）*</label>
-        <select id="p-years">
+      <div class="field" id="field-department">
+        <label>Q1-2. 請問您所屬系所？ *</label>
+        <div class="radio-group">
+          <label><input type="radio" name="department" value="歷史系所"> 歷史系所</label>
+          <label><input type="radio" name="department" value="傳播系所"> 傳播系所</label>
+        </div>
+        <div class="field-err">請選擇您所屬系所</div>
+      </div>
+      <div class="field" id="field-data-types">
+        <label>Q2. 您最常處理的研究資料類型：（可複選）*</label>
+        <div class="radio-group">
+          <label><input type="checkbox" name="data_types" value="文字"> 文字（如文章、報告、訪談逐字稿、史料文獻）</label>
+          <label><input type="checkbox" name="data_types" value="數值"> 數值（如統計數據、問卷結果、量化分析）</label>
+          <label><input type="checkbox" name="data_types" value="圖片"> 圖片（如照片、圖畫、掃描圖檔）</label>
+          <label><input type="checkbox" name="data_types" value="影音"> 影音（如影像、YouTube、Podcast、錄音檔）</label>
+          <label><input type="checkbox" name="data_types" value="其他"> 其他：</label>
+        </div>
+        <input type="text" class="other-input" id="data-types-other" placeholder="請說明">
+        <div class="field-err">請至少選擇一項資料類型</div>
+      </div>
+      <div class="field" id="field-rank">
+        <label>Q3. 請問您目前的學術職級？ *</label>
+        <div class="radio-group">
+          <label><input type="radio" name="academic_rank" value="博士生"> 博士生</label>
+          <label><input type="radio" name="academic_rank" value="博士後研究員"> 博士後研究員</label>
+          <label><input type="radio" name="academic_rank" value="助理教授/助理研究員"> 助理教授/助理研究員</label>
+          <label><input type="radio" name="academic_rank" value="副教授/副研究員"> 副教授/副研究員</label>
+          <label><input type="radio" name="academic_rank" value="教授/研究員"> 教授/研究員</label>
+        </div>
+        <div class="field-err">請選擇您目前的學術職級</div>
+      </div>
+      <div class="field" id="field-age">
+        <label>Q4. 請問您的年齡 *</label>
+        <select id="p-age">
           <option value="">請選擇</option>
-          <option>目前仍在學</option><option>1–3 年</option><option>4–7 年</option>
-          <option>8–15 年</option><option>16 年以上</option>
+          <option>25-30</option><option>31-35</option><option>36-40</option>
+          <option>41-45</option><option>46-50</option><option>51-55</option>
+          <option>56-60</option><option>61-65</option><option>66-70</option>
+          <option>71-75</option>
         </select>
-        <div class="field-err">請選擇您的學術年資</div>
+        <div class="field-err">請選擇您的年齡</div>
       </div>
-      <div class="field" id="field-ai">
-        <label>您目前使用 AI 工具輔助研究的頻率 *</label>
+      <div class="field" id="field-gender">
+        <label>Q5. 請問您的性別 *</label>
         <div class="radio-group">
-          <label><input type="radio" name="aiuse" value="從未使用"> 從未使用</label>
-          <label><input type="radio" name="aiuse" value="偶爾使用（每月不到一次）"> 偶爾使用（每月不到一次）</label>
-          <label><input type="radio" name="aiuse" value="有時使用（每月數次）"> 有時使用（每月數次）</label>
-          <label><input type="radio" name="aiuse" value="經常使用（每週數次）"> 經常使用（每週數次）</label>
-          <label><input type="radio" name="aiuse" value="幾乎每天使用"> 幾乎每天使用</label>
+          <label><input type="radio" name="gender" value="男性"> 男性</label>
+          <label><input type="radio" name="gender" value="女性"> 女性</label>
+          <label><input type="radio" name="gender" value="非二元性別"> 非二元性別</label>
+          <label><input type="radio" name="gender" value="不願回答"> 不願回答</label>
+          <label><input type="radio" name="gender" value="其他"> 其他：</label>
         </div>
-        <div class="field-err">請選擇您的 AI 使用頻率</div>
+        <input type="text" class="other-input" id="gender-other" placeholder="請說明">
+        <div class="field-err">請選擇您的性別</div>
       </div>
-      <div class="field" id="field-domain">
-        <label>研究領域 *</label>
+      <div class="field" id="field-genai">
+        <label>Q6. 您在研究中是否應用過 GenAI 工具？ *</label>
         <div class="radio-group">
-          <label><input type="radio" name="research_domain" value="傳播"> 傳播</label>
-          <label><input type="radio" name="research_domain" value="歷史"> 歷史</label>
+          <label><input type="radio" name="genai_use" value="是"> 是</label>
+          <label><input type="radio" name="genai_use" value="否"> 否</label>
         </div>
-        <div class="field-err">請選擇您的研究領域</div>
+        <div class="field-err">請選擇是或否</div>
       </div>
 
       <div class="btn-row">
@@ -942,8 +977,8 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
     <table class="resp-table" id="resp-table">
       <thead>
         <tr>
-          <th>受試者 ID</th><th>完成時間</th><th>研究領域</th><th>職位</th>
-          <th>AI 使用頻率</th><th>排列時間</th><th>狀態</th><th></th>
+          <th>受試者 ID</th><th>完成時間</th><th>研究領域</th><th>學術職級</th>
+          <th>年齡</th><th>排列時間</th><th>狀態</th><th></th>
         </tr>
       </thead>
       <tbody id="resp-tbody"><tr><td colspan="8" style="text-align:center;color:var(--text3);padding:24px">載入中…</td></tr></tbody>
@@ -1151,10 +1186,13 @@ function badge(el, state, msg) {
 ══════════════════════════════════════ */
 function validateProfile() {
   const checks = [
-    { id:'field-pos',ok: !!document.querySelector('input[name=position]:checked') },
-    { id:'field-yr', ok: !!document.getElementById('p-years').value },
-    { id:'field-ai', ok: !!document.querySelector('input[name=aiuse]:checked') },
-    { id:'field-domain', ok: !!document.querySelector('input[name=research_domain]:checked') },
+    { id:'field-school',     ok: !!document.querySelector('input[name=school]:checked') },
+    { id:'field-department', ok: !!document.querySelector('input[name=department]:checked') },
+    { id:'field-data-types', ok: document.querySelectorAll('input[name=data_types]:checked').length > 0 },
+    { id:'field-rank',       ok: !!document.querySelector('input[name=academic_rank]:checked') },
+    { id:'field-age',        ok: !!document.getElementById('p-age').value },
+    { id:'field-gender',     ok: !!document.querySelector('input[name=gender]:checked') },
+    { id:'field-genai',      ok: !!document.querySelector('input[name=genai_use]:checked') },
   ];
   let valid = true;
   checks.forEach(c => {
@@ -1301,11 +1339,21 @@ function fcKeyHandler(e) {
 document.addEventListener('keydown', fcKeyHandler);
 
 function collectProfile() {
+  const department = document.querySelector('input[name=department]:checked')?.value || '';
+  const dataTypes  = Array.from(document.querySelectorAll('input[name=data_types]:checked')).map(el=>el.value);
+  const gender     = document.querySelector('input[name=gender]:checked')?.value || '';
+
   return {
-    position: document.querySelector('input[name=position]:checked')?.value || '',
-    years:    document.getElementById('p-years').value,
-    ai_use:   document.querySelector('input[name=aiuse]:checked')?.value || '',
-    research_domain: document.querySelector('input[name=research_domain]:checked')?.value || '',
+    school:          document.querySelector('input[name=school]:checked')?.value || '',
+    department,
+    research_domain: department === '歷史系所' ? '歷史' : department === '傳播系所' ? '傳播' : '',
+    data_types:       dataTypes,
+    data_types_other: dataTypes.includes('其他') ? document.getElementById('data-types-other').value.trim() : '',
+    academic_rank:   document.querySelector('input[name=academic_rank]:checked')?.value || '',
+    age:             document.getElementById('p-age').value,
+    gender,
+    gender_other:    gender === '其他' ? document.getElementById('gender-other').value.trim() : '',
+    genai_use:       document.querySelector('input[name=genai_use]:checked')?.value || '',
   };
 }
 
@@ -1410,8 +1458,8 @@ async function loadAdmin() {
       <td>${r.participant_id || r.id.slice(0,8)}</td>
       <td>${dt}</td>
       <td>${bg.research_domain||'–'}</td>
-      <td>${bg.position||'–'}</td>
-      <td>${bg.ai_use||'–'}</td>
+      <td>${bg.academic_rank||'–'}</td>
+      <td>${bg.age||'–'}</td>
       <td>${r.duration_minutes ? r.duration_minutes+'分' : '–'}</td>
       <td><span class="badge ${isComplete?'complete':'partial'}">${isComplete?'完成':'進行中'}</span></td>
       <td><button class="del-btn" onclick="deleteResponse('${r.id}')">刪除</button></td>
@@ -1450,11 +1498,13 @@ function exportCSV(domain) {
   if (!complete.length) { alert(`尚無「${domain}」已完成的資料`); return; }
 
   const ids = (STATEMENTS_BY_DOMAIN[domain] || []).map(s=>s.id);
-  const header = ['participant_id', 'position', 'years', 'ai_use', ...ids.map(i=>'s'+i)];
+  const header = ['participant_id', 'school', 'department', 'data_types', 'academic_rank', 'age', 'gender', 'genai_use', ...ids.map(i=>'s'+i)];
   const rows = complete.map(r => {
     const bg = r.background || {};
     const scores = ids.map(i => r.qsort?.[String(i)] ?? '');
-    return [r.participant_id, bg.position, bg.years, bg.ai_use, ...scores];
+    const dataTypes = (bg.data_types || []).join(';') + (bg.data_types_other ? `(${bg.data_types_other})` : '');
+    const gender = bg.gender === '其他' && bg.gender_other ? `其他(${bg.gender_other})` : bg.gender;
+    return [r.participant_id, bg.school, bg.department, dataTypes, bg.academic_rank, bg.age, gender, bg.genai_use, ...scores];
   });
 
   const csv = [header, ...rows].map(r=>r.map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
