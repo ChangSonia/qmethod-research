@@ -1319,8 +1319,14 @@ async function submitQsort() {
   }
   const qsortData = {};
   STATEMENTS.forEach(s => { qsortData[String(s.id)] = placement[s.id]?.score ?? null; });
+  const duration = Math.round((Date.now() - startedAt) / 60000);
   try {
-    await saveToFirebase({ qsort: qsortData, status: 'qsort_done' });
+    await saveToFirebase({
+      qsort: qsortData,
+      completed_at: new Date().toISOString(),
+      duration_minutes: duration,
+      status: 'complete'
+    });
   } catch(e) { console.warn('Firebase save failed', e); }
   goTo('page-done');
 }
@@ -1329,20 +1335,14 @@ async function finishStudy() {
   const btn = document.getElementById('btn-finish');
   const comment = document.getElementById('post-comment').value.trim();
   const email   = document.getElementById('done-email').value.trim();
-  const qsortData = {};
-  STATEMENTS.forEach(s => { qsortData[String(s.id)] = placement[s.id]?.score ?? null; });
-  const duration = Math.round((Date.now() - startedAt) / 60000);
 
   btn.disabled = true;
   badge('done-badge', 'saving', '正在儲存…');
   try {
-    await saveToFirebase({
-      qsort: qsortData,
-      comment,
-      completed_at: new Date().toISOString(),
-      duration_minutes: duration,
-      status: 'complete'
-    });
+    // 只更新留言，不重寫 qsort／status／completed_at ——
+    // 這些在 submitQsort() 就已經確定寫入，避免萬一使用者
+    // 在這一頁重新整理導致 placement 清空、把已完成的排序蓋掉
+    await saveToFirebase({ comment });
     if (email) {
       // 存進獨立的 collection，不含 participant_id／docRef，
       // 確保無法與排序結果連結（去識別化）
