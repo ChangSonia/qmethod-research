@@ -1463,7 +1463,7 @@ function exportCSV(domain) {
     return [r.participant_id, bg.school, bg.department, dataTypes, bg.academic_rank, bg.age, gender, bg.genai_use, ...scores];
   });
 
-  const csv = [header, ...rows].map(r=>r.map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const csv = [header, ...rows].map(r=>r.map(v=>`"${String(v==null?'':v).replace(/"/g,'""')}"`).join(',')).join('\n');
   download(`qsort_data_${domain}.csv`, '\uFEFF' + csv, 'text/csv;charset=utf-8');
 }
 
