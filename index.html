@@ -380,7 +380,6 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 }
 .fc-card.exit-left  { transform:translateX(-50px); opacity:0; pointer-events:none; }
 .fc-card.exit-right { transform:translateX(50px);  opacity:0; pointer-events:none; }
-.fc-card-num { font-size:22px; font-weight:600; color:var(--text2); margin-bottom:14px; }
 
 .fc-btns { display:flex; gap:12px; width:100%; max-width:600px; }
 .fc-btn {
@@ -782,7 +781,6 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
       <!-- card -->
       <div class="fc-card-wrap">
         <div class="fc-card" id="fc-card">
-          <div class="fc-card-num" id="fc-card-num">#1</div>
           <div id="fc-card-text"></div>
         </div>
       </div>
@@ -1250,12 +1248,10 @@ function fcRenderCard(animDir) {
     card.classList.add(animDir==='left'?'exit-left':'exit-right');
     setTimeout(()=>{
       card.classList.remove('exit-left','exit-right');
-      document.getElementById('fc-card-num').textContent = '#'+stmt.id;
       document.getElementById('fc-card-text').textContent = stmt.text;
       fcUpdateProgress();
     }, 150);
   } else {
-    document.getElementById('fc-card-num').textContent = '#'+stmt.id;
     document.getElementById('fc-card-text').textContent = stmt.text;
     fcUpdateProgress();
   }
