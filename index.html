@@ -631,7 +631,7 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
   <span style="font-size:11px;color:#9A9A93;margin-right:4px;">🛠 測試跳轉：</span>
   <button onclick="document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-intro').classList.add('active')"     style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #444;background:transparent;color:#ccc;cursor:pointer;">同意書</button>
   <button onclick="document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-profile').classList.add('active')"   style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #444;background:transparent;color:#ccc;cursor:pointer;">基本資料</button>
-  <button onclick="document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-presort').classList.add('active');if(!piles.unplaced.length){piles={unplaced:[...STATEMENTS.map(s=>s.id)],neg:[],zero:[],pos:[]};fcHistory=[];}buildPresort();" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #444;background:transparent;color:#ccc;cursor:pointer;">初步分類</button>
+  <button onclick="document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-presort').classList.add('active');if(!piles.unplaced.length){piles={unplaced:shuffled(STATEMENTS.map(s=>s.id)),neg:[],zero:[],pos:[]};fcHistory=[];}buildPresort();" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #444;background:transparent;color:#ccc;cursor:pointer;">初步分類</button>
   <button onclick="document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-qsort').classList.add('active');if(!piles.pos.length&&!piles.neg.length){piles={unplaced:[],neg:STATEMENTS.slice(0,18).map(s=>s.id),zero:STATEMENTS.slice(18,36).map(s=>s.id),pos:STATEMENTS.slice(36).map(s=>s.id)};}refreshQSort();" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #444;background:transparent;color:#ccc;cursor:pointer;">Q Sort</button>
   <button onclick="devAutoFillQSort()" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #444;background:transparent;color:#ccc;cursor:pointer;">自動填滿 Q Sort</button>
   <button onclick="document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-done').classList.add('active')"      style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #444;background:transparent;color:#ccc;cursor:pointer;">完成頁</button>
@@ -1099,6 +1099,15 @@ function genId() {
   return 'P-' + Math.random().toString(36).slice(2,8).toUpperCase();
 }
 
+function shuffled(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 function openModal(which) {
   document.getElementById('modal-'+which).classList.add('open');
 }
@@ -1200,11 +1209,13 @@ async function startQSort() {
   participantId = genId();
   startedAt = Date.now();
 
-  piles = { unplaced:[...STATEMENTS.map(s=>s.id)], neg:[], zero:[], pos:[] };
+  // 初步分類每位受試者以隨機順序呈現（卡片上的編號仍是原本的題號）
+  const presortOrder = shuffled(STATEMENTS.map(s=>s.id));
+  piles = { unplaced:[...presortOrder], neg:[], zero:[], pos:[] };
   fcHistory = [];
 
   try {
-    await saveToFirebase({ background: profile, status: 'started' });
+    await saveToFirebase({ background: profile, presort_order: presortOrder, status: 'started' });
   } catch(e) { console.warn('Firebase save failed', e); }
 
   goTo('page-presort');
