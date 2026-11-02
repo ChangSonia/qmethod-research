@@ -625,7 +625,7 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 <div id="dev-nav" style="
   position:fixed; bottom:0; left:0; right:0; z-index:9999;
   background:#1A1A18; padding:6px 12px;
-  display:flex; align-items:center; gap:6px; flex-wrap:wrap;
+  display:none; align-items:center; gap:6px; flex-wrap:wrap;
 ">
   <span style="font-size:11px;color:#9A9A93;margin-right:4px;">🛠 測試跳轉：</span>
   <button onclick="document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-intro').classList.add('active')"     style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #444;background:transparent;color:#ccc;cursor:pointer;">同意書</button>
@@ -1129,6 +1129,7 @@ function toggleConsent() {
 /* check URL for ?admin */
 function checkRoute() {
   if (location.search.includes('admin')) goTo('page-admin-login');
+  if (location.search.includes('dev')) document.getElementById('dev-nav').style.display = 'flex';
 }
 
 /* ══════════════════════════════════════
