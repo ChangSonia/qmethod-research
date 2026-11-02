@@ -129,15 +129,15 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
   border-bottom: 0.5px solid var(--border);
   display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; flex-shrink: 0;
 }
-.top-bar h1 { font-size: calc(16px + var(--ui-d, 0px)); font-weight: 500; color: var(--text2); white-space: nowrap; }
+.top-bar h1 { font-size: 17px; font-weight: 500; color: var(--text2); white-space: nowrap; }
 .prog-wrap { flex: 1; display: flex; align-items: center; gap: 10px; }
 .prog-bar  { flex: 1; height: 4px; background: var(--bg2); border-radius: 2px; overflow: hidden; }
 .prog-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width 0.3s; }
-.prog-text { font-size: calc(14px + var(--ui-d, 0px)); color: var(--text2); white-space: nowrap; min-width: calc(86px + var(--ui-d, 0px) * 8); text-align: right; }
+.prog-text { font-size: 15px; color: var(--text2); white-space: nowrap; min-width: 92px; text-align: right; }
 
 .toolbar { display: flex; gap: 6px; }
 .tbtn {
-  font-size: calc(14px + var(--ui-d, 0px)); padding: 5px 12px; border-radius: var(--r);
+  font-size: 15px; padding: 5px 12px; border-radius: var(--r);
   border: 0.5px solid var(--border); background: transparent;
   color: var(--text2); cursor: pointer; white-space: nowrap; font-family: inherit;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
@@ -172,14 +172,14 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 }
 .resize-handle:hover::after, .resize-handle.dragging::after { opacity: 1; }
 .left-hdr { padding: 10px 12px 8px; border-bottom: 0.5px solid var(--border); }
-.left-hdr p { font-size: calc(14px + var(--ui-d, 0px)); color: var(--text2); margin-bottom: 6px; }
-.search { width: 100%; font-size: calc(15px + var(--ui-d, 0px)); padding: 6px 10px; border: 0.5px solid var(--border); border-radius: var(--r); background: var(--bg); color: var(--text); outline: none; margin-bottom: 8px; }
+.left-hdr p { font-size: 15px; color: var(--text2); margin-bottom: 6px; }
+.search { width: 100%; font-size: 16px; padding: 6px 10px; border: 0.5px solid var(--border); border-radius: var(--r); background: var(--bg); color: var(--text); outline: none; margin-bottom: 8px; }
 .search:focus { border-color: var(--border2); }
 
 /* pile filter chips */
 .pile-filter-row { display: flex; gap: 4px; flex-wrap: wrap; }
 .pile-chip {
-  font-size: 13px; padding: 3px 8px; border-radius: 20px;
+  font-size: 14px; padding: 3px 8px; border-radius: 20px;
   border: 1px solid var(--border); background: transparent;
   color: var(--text2); cursor: pointer; font-family: inherit;
   transition: all 0.15s; white-space: nowrap;
@@ -214,9 +214,9 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
   display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
   padding: 6px 2px 2px;
 }
-.col-filter-label { font-size: calc(14px + var(--ui-d, 0px)); color: var(--text3); white-space: nowrap; }
+.col-filter-label { font-size: 15px; color: var(--text3); white-space: nowrap; }
 .col-chip {
-  font-size: 14px; padding: 4px 10px; border-radius: 20px;
+  font-size: 15px; padding: 4px 10px; border-radius: 20px;
   border: 1px solid var(--border); background: transparent;
   color: var(--text2); cursor: pointer; font-family: inherit;
   transition: all 0.15s; white-space: nowrap;
@@ -229,9 +229,9 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 
 .dist-endlbl-row { display: flex; justify-content: space-between; align-items: center; padding: 0 4px 2px; }
 .dist-label-row { display: flex; align-items: center; gap: 4px; }
-.end-lbl { font-size: calc(13px + var(--ui-d, 0px)); color: var(--text2); white-space: nowrap; }
+.end-lbl { font-size: 14px; color: var(--text2); white-space: nowrap; }
 .col-labels { display: flex; width: 100%; padding: 0 4px; }
-.col-lbl { flex: 1; text-align: center; font-size: calc(13px + var(--ui-d, 0px)); font-weight: 600; }
+.col-lbl { flex: 1; text-align: center; font-size: 14px; font-weight: 600; }
 .col-lbl.neg  { color: var(--red); }
 .col-lbl.pos  { color: var(--green); }
 .col-lbl.zero { color: var(--text3); }
@@ -356,7 +356,7 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
   border-bottom:0.5px solid var(--border);
   display:flex; align-items:center; gap:12px; flex-shrink:0;
 }
-.presort-top h1 { font-size:calc(14px + var(--ui-d, 0px)); font-weight:500; color:var(--text2); white-space:nowrap; flex:1; }
+.presort-top h1 { font-size:14px; font-weight:500; color:var(--text2); white-space:nowrap; flex:1; }
 
 .fc-body {
   flex:1; display:flex; flex-direction:column;
@@ -367,7 +367,7 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 .fc-progress-wrap { width:100%; max-width:600px; display:flex; align-items:center; gap:12px; }
 .fc-prog-bar  { flex:1; height:4px; background:var(--bg2); border-radius:2px; overflow:hidden; }
 .fc-prog-fill { height:100%; background:var(--green); border-radius:2px; transition:width 0.3s; }
-.fc-prog-text { font-size:calc(12px + var(--ui-d, 0px)); color:var(--text3); white-space:nowrap; min-width:48px; text-align:right; }
+.fc-prog-text { font-size:12px; color:var(--text3); white-space:nowrap; min-width:48px; text-align:right; }
 
 .fc-card-wrap { width:100%; max-width:600px; }
 .fc-card {
@@ -391,7 +391,7 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
   user-select:none;
 }
 .fc-btn:active { transform:scale(0.97); }
-.fc-btn .fc-lbl { font-size:calc(15px + var(--ui-d, 0px)); font-weight:600; }
+.fc-btn .fc-lbl { font-size:15px; font-weight:600; }
 .fc-btn .fc-key { font-size:11px; color:var(--text3); }
 .fc-btn.neg  { border-color:#F0997B; }
 .fc-btn.neg:hover  { background:#FDF3F0; border-color:var(--red); }
@@ -404,7 +404,7 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 
 .fc-undo-row { display:flex; align-items:center; gap:10px; }
 .fc-undo-btn {
-  font-size:calc(12px + var(--ui-d, 0px)); padding:5px 14px; border-radius:var(--r);
+  font-size:12px; padding:5px 14px; border-radius:var(--r);
   border:0.5px solid var(--border); background:transparent;
   color:var(--text2); cursor:pointer; font-family:inherit; transition:background 0.15s;
 }
@@ -414,13 +414,13 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 /* font-size control */
 .fs-ctrl { display:flex; align-items:center; gap:4px; }
 .fs-btn {
-  width:calc(28px + var(--ui-d, 0px)); height:calc(28px + var(--ui-d, 0px)); border-radius:var(--r); border:0.5px solid var(--border);
-  background:transparent; color:var(--text2); cursor:pointer; font-size:calc(16px + var(--ui-d, 0px));
+  width:30px; height:30px; border-radius:var(--r); border:0.5px solid var(--border);
+  background:transparent; color:var(--text2); cursor:pointer; font-size:17px;
   display:flex; align-items:center; justify-content:center;
   transition:background 0.15s; line-height:1; font-family:inherit;
 }
 .fs-btn:hover { background:var(--bg2); color:var(--text); }
-.fs-label { font-size:calc(13px + var(--ui-d, 0px)); color:var(--text3); min-width:36px; text-align:center; }
+.fs-label { font-size:14px; color:var(--text3); min-width:38px; text-align:center; }
 
 /* cards in qsort respect font-size variable */
 .stmt-card, .slot-card { font-size:var(--card-fs,16px); }
@@ -460,10 +460,10 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 }
 .modal-close:hover { background: var(--bg2); }
 
-.modal-box h3 { font-size: calc(17px + var(--ui-d, 0px)); font-weight: 600; margin-bottom: 6px; }
-.modal-box .modal-sub { font-size: calc(13px + var(--ui-d, 0px)); color: var(--text2); margin-bottom: 20px; }
+.modal-box h3 { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+.modal-box .modal-sub { font-size: 13px; color: var(--text2); margin-bottom: 20px; }
 .modal-section { margin-bottom: 18px; }
-.modal-section h4 { font-size: calc(13px + var(--ui-d, 0px)); font-weight: 600; margin-bottom: 8px; color: var(--text); }
+.modal-section h4 { font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text); }
 .modal-step {
   display: flex; gap: 12px; align-items: flex-start;
   padding: 8px 10px; border-radius: var(--r);
@@ -478,16 +478,16 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 .modal-step-icon.zero { background: var(--bg2); color: var(--text2); }
 .modal-step-icon.pos  { background: #F0FAF6; color: var(--green-d); }
 .modal-step-icon.info { background: var(--bg2); color: var(--text2); }
-.modal-step-text { font-size: calc(13px + var(--ui-d, 0px)); line-height: 1.6; color: var(--text2); }
+.modal-step-text { font-size: 13px; line-height: 1.6; color: var(--text2); }
 .modal-step-text strong { color: var(--text); }
 .modal-divider { height: 0.5px; background: var(--border); margin: 16px 0; }
 .modal-ok-btn { width: 100%; margin-top: 20px; }
 
 /* ? button shared style */
 .help-btn {
-  width: calc(30px + var(--ui-d, 0px)); height: calc(30px + var(--ui-d, 0px)); border-radius: 50%;
+  width: 32px; height: 32px; border-radius: 50%;
   border: 0.5px solid var(--border); background: transparent;
-  color: var(--text2); cursor: pointer; font-size: calc(16px + var(--ui-d, 0px)); font-weight: 600;
+  color: var(--text2); cursor: pointer; font-size: 17px; font-weight: 600;
   display: flex; align-items: center; justify-content: center;
   transition: background 0.15s; flex-shrink: 0;
 }
@@ -799,7 +799,7 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
       <!-- undo row -->
       <div class="fc-undo-row">
         <button class="fc-undo-btn" id="fc-undo-btn" onclick="fcUndo()" disabled>↩ 上一步</button>
-        <span id="fc-undo-hint" style="font-size:calc(11px + var(--ui-d, 0px));color:var(--text3);"></span>
+        <span id="fc-undo-hint" style="font-size:11px;color:var(--text3);"></span>
       </div>
     </div>
   </div>
@@ -1080,19 +1080,15 @@ let fcHistory = [];
 let cardFontSize = 14;
 const FS_MIN = 4, FS_MAX = 36;
 
-/* 介面文字跟著 −／＋ 一起縮放，幅度是卡片的一半（卡片 ±2px → 介面 ±1px），並限制在 ±UI_D_MAX 內 */
-const UI_D_MAX = 4;
-function applyFontSize() {
-  document.documentElement.style.setProperty('--card-fs', cardFontSize + 'px');
-  const d = Math.max(-UI_D_MAX, Math.min(UI_D_MAX, (cardFontSize - 14) / 2));
-  document.documentElement.style.setProperty('--ui-d', d + 'px');
-  document.querySelectorAll('.fs-label').forEach(el => el.textContent = cardFontSize + 'px');
-}
 function changeFontSize(delta) {
   cardFontSize = Math.min(FS_MAX, Math.max(FS_MIN, cardFontSize + delta * 2));
-  applyFontSize();
+  document.documentElement.style.setProperty('--card-fs', cardFontSize + 'px');
+  document.querySelectorAll('.fs-label').forEach(el => el.textContent = cardFontSize + 'px');
 }
-function initFontSize() { applyFontSize(); }
+function initFontSize() {
+  document.documentElement.style.setProperty('--card-fs', cardFontSize + 'px');
+  document.querySelectorAll('.fs-label').forEach(el => el.textContent = cardFontSize + 'px');
+}
 
 /* ══════════════════════════════════════
    UTILITIES
