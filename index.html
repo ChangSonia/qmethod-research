@@ -874,7 +874,7 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 
       <div class="field" style="margin-top:24px">
         <label>電子郵件（選填）</label>
-        <p class="sub" style="margin-bottom:8px">若您願意參與後續研究，請輸入您的電子郵件。此欄位將獨立儲存於另一份檔案，與您的排序結果分開保存，研究團隊無法將兩者連結。</p>
+        <p class="sub" style="margin-bottom:8px">若您願意參與後續研究，請輸入您的電子郵件。您的電子郵件與下方留言將一起獨立儲存於另一份檔案，與您的排序結果分開保存，研究團隊無法將兩者連結。</p>
         <input type="email" id="done-email" placeholder="your@email.com">
       </div>
       <div class="field" style="margin-top:20px">
@@ -1371,16 +1371,15 @@ async function finishStudy() {
   btn.disabled = true;
   badge('done-badge', 'saving', '正在儲存…');
   try {
-    // 只更新留言，不重寫 qsort／status／completed_at ——
-    // 這些在 submitQsort() 就已經確定寫入，避免萬一使用者
-    // 在這一頁重新整理導致 placement 清空、把已完成的排序蓋掉
-    await saveToFirebase({ comment });
-    if (email) {
-      // 存進獨立的 collection，不含 participant_id／docRef，
-      // 確保無法與排序結果連結（去識別化）
+    // email 與留言綁在同一筆、存進獨立的 collection，不含 participant_id／docRef，
+    // 確保無法與排序結果連結（去識別化）。排序結果與完成狀態在 submitQsort() 就已寫入，
+    // 這裡完全不碰 responses。
+    if (email || comment) {
+      await waitForFirebase();
       const { collection, addDoc, serverTimestamp } = window._fns;
       await addDoc(collection(window._db, 'followup_contacts'), {
         email,
+        comment,
         submitted_at: serverTimestamp(),
       });
     }
