@@ -129,15 +129,15 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
   border-bottom: 0.5px solid var(--border);
   display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; flex-shrink: 0;
 }
-.top-bar h1 { font-size: 17px; font-weight: 500; color: var(--text2); white-space: nowrap; }
+.top-bar h1 { font-size: 15.7px; font-weight: 500; color: var(--text2); white-space: nowrap; }
 .prog-wrap { flex: 1; display: flex; align-items: center; gap: 10px; }
 .prog-bar  { flex: 1; height: 4px; background: var(--bg2); border-radius: 2px; overflow: hidden; }
 .prog-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width 0.3s; }
-.prog-text { font-size: 15px; color: var(--text2); white-space: nowrap; min-width: 92px; text-align: right; }
+.prog-text { font-size: 13.7px; color: var(--text2); white-space: nowrap; min-width: 92px; text-align: right; }
 
 .toolbar { display: flex; gap: 6px; }
 .tbtn {
-  font-size: 15px; padding: 5px 12px; border-radius: var(--r);
+  font-size: 13.7px; padding: 5px 12px; border-radius: var(--r);
   border: 0.5px solid var(--border); background: transparent;
   color: var(--text2); cursor: pointer; white-space: nowrap; font-family: inherit;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
@@ -172,14 +172,14 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 }
 .resize-handle:hover::after, .resize-handle.dragging::after { opacity: 1; }
 .left-hdr { padding: 10px 12px 8px; border-bottom: 0.5px solid var(--border); }
-.left-hdr p { font-size: 15px; color: var(--text2); margin-bottom: 6px; }
-.search { width: 100%; font-size: 16px; padding: 6px 10px; border: 0.5px solid var(--border); border-radius: var(--r); background: var(--bg); color: var(--text); outline: none; margin-bottom: 8px; }
+.left-hdr p { font-size: 13.7px; color: var(--text2); margin-bottom: 6px; }
+.search { width: 100%; font-size: 14.7px; padding: 6px 10px; border: 0.5px solid var(--border); border-radius: var(--r); background: var(--bg); color: var(--text); outline: none; margin-bottom: 8px; }
 .search:focus { border-color: var(--border2); }
 
 /* pile filter chips */
 .pile-filter-row { display: flex; gap: 4px; flex-wrap: wrap; }
 .pile-chip {
-  font-size: 14px; padding: 3px 8px; border-radius: 20px;
+  font-size: 12.7px; padding: 3px 8px; border-radius: 20px;
   border: 1px solid var(--border); background: transparent;
   color: var(--text2); cursor: pointer; font-family: inherit;
   transition: all 0.15s; white-space: nowrap;
@@ -214,9 +214,9 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
   display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
   padding: 6px 2px 2px;
 }
-.col-filter-label { font-size: 15px; color: var(--text3); white-space: nowrap; }
+.col-filter-label { font-size: 13.7px; color: var(--text3); white-space: nowrap; }
 .col-chip {
-  font-size: 15px; padding: 4px 10px; border-radius: 20px;
+  font-size: 13.7px; padding: 4px 10px; border-radius: 20px;
   border: 1px solid var(--border); background: transparent;
   color: var(--text2); cursor: pointer; font-family: inherit;
   transition: all 0.15s; white-space: nowrap;
@@ -229,9 +229,9 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 
 .dist-endlbl-row { display: flex; justify-content: space-between; align-items: center; padding: 0 4px 2px; }
 .dist-label-row { display: flex; align-items: center; gap: 4px; }
-.end-lbl { font-size: 14px; color: var(--text2); white-space: nowrap; }
+.end-lbl { font-size: 12.7px; color: var(--text2); white-space: nowrap; }
 .col-labels { display: flex; width: 100%; padding: 0 4px; }
-.col-lbl { flex: 1; text-align: center; font-size: 14px; font-weight: 600; }
+.col-lbl { flex: 1; text-align: center; font-size: 12.7px; font-weight: 600; }
 .col-lbl.neg  { color: var(--red); }
 .col-lbl.pos  { color: var(--green); }
 .col-lbl.zero { color: var(--text3); }
@@ -415,12 +415,12 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 .fs-ctrl { display:flex; align-items:center; gap:4px; }
 .fs-btn {
   width:30px; height:30px; border-radius:var(--r); border:0.5px solid var(--border);
-  background:transparent; color:var(--text2); cursor:pointer; font-size:17px;
+  background:transparent; color:var(--text2); cursor:pointer; font-size:15.7px;
   display:flex; align-items:center; justify-content:center;
   transition:background 0.15s; line-height:1; font-family:inherit;
 }
 .fs-btn:hover { background:var(--bg2); color:var(--text); }
-.fs-label { font-size:14px; color:var(--text3); min-width:38px; text-align:center; }
+.fs-label { font-size:12.7px; color:var(--text3); min-width:38px; text-align:center; }
 
 /* cards in qsort respect font-size variable */
 .stmt-card, .slot-card { font-size:var(--card-fs,16px); }
@@ -487,7 +487,7 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 .help-btn {
   width: 32px; height: 32px; border-radius: 50%;
   border: 0.5px solid var(--border); background: transparent;
-  color: var(--text2); cursor: pointer; font-size: 17px; font-weight: 600;
+  color: var(--text2); cursor: pointer; font-size: 15.7px; font-weight: 600;
   display: flex; align-items: center; justify-content: center;
   transition: background 0.15s; flex-shrink: 0;
 }
